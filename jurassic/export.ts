@@ -3,7 +3,7 @@
 
 import { z } from "npm:zod@^3.23.8";
 import path from "node:path";
-const configSchema = z.object({
+const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
@@ -17,7 +17,7 @@ const findConfig = async ( dir: string = Deno.cwd(), d = 0, config = "jurassic.j
     const f = path.join(dir, config);
     await Deno.lstat(f);
     return f;
-  } catch (e) {
+  } catch {
     return findConfig(path.join(dir, "../"), d + 1);
   }
 };
