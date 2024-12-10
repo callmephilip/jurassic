@@ -19,11 +19,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      # - name: Run export
-      #   run: deno task export
-
-      # - name: Show content of jurassic/export.ts
-      #   run: cat jurassic/export.ts
+      - name: Run export
+        run: deno task export
 
       - name: Tests
         run: deno test --allow-all
