@@ -1,10 +1,10 @@
-//source export.ipynb
+//source /Users/philip/projects/jurassic/nbs/export.ipynb
 
 
 import { z } from "npm:zod@^3.23.8";
 import path from "node:path";
-
 const configSchema = z.object({
+  configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
 });
@@ -24,7 +24,7 @@ const findConfig = async ( dir: string = Deno.cwd(), d = 0, config = "jurassic.j
 export const getConfig = async (): Promise<Config> => {
   const cf = await findConfig();
   const dcf = path.dirname(cf);
-  const c = configSchema.parse(JSON.parse(await Deno.readTextFile(cf)));
+  const c = configSchema.parse(Object.assign({ configPath: cf }, JSON.parse(await Deno.readTextFile(cf))));
   c.nbsPath = path.join(dcf, c.nbsPath);
   c.outputPath = path.join(dcf, c.outputPath);
   return c;
@@ -84,7 +84,23 @@ export const exportNb = async (notebookPath: string, config: Config): Promise<vo
     await Deno.mkdir(outputDir, { recursive: true });
     await Deno.writeTextFile(
       path.join(config.outputPath, outputFile),
-      await processNb(notebook)
+      await processNb(path.resolve(config.nbsPath, notebook))
     );
   }
+};
+
+// create markdown representation of the directory listing files and subdirectories
+export const dirListing = async (dir: string, d = 0): Promise<string> => {
+  if (d > 10) {
+    return "";
+  }
+
+  let md = "";
+  for await (const f of Deno.readDir(dir)) {
+    md += `${"  ".repeat(d)}- ${f.name}\n`;
+    if (f.isDirectory) {
+      md += await dirListing(path.join(dir, f.name), d + 1);
+    }
+  }
+  return md;
 };

@@ -1,29 +1,43 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals, assert } from "jsr:@std/assert";
+import { dirListing } from "../jurassic/export.ts";
+import path from "npm:path";
 
 Deno.test("export bin", async (t) => {
   // setup temp stuff
+  const td = await Deno.makeTempDir({});
+
+  // recreate mini project in temp directory
+  await Deno.copyFile("./jurassic.json", `${td}/jurassic.json`);
+  await Deno.mkdir(`${td}/nbs`);
+  await Deno.copyFile("./nbs/export.ipynb", `${td}/nbs/export.ipynb`);
+
+  console.log(await dirListing(td));
 
   await t.step("run export bin", async () => {
-    const command = new Deno.Command(Deno.execPath(), {
-      args: ["run", "-A", "./bin/export.ts"],
-    });
-    const { code, stdout, stderr } = command.outputSync();
+    const { code, stdout, stderr } = new Deno.Command(Deno.execPath(), {
+      args: ["run", "-A", path.resolve("./bin/export.ts"), "."],
+      cwd: td,
+    }).outputSync();
+
+    const output = new TextDecoder().decode(stdout);
+    const errors = new TextDecoder().decode(stderr);
+
+    console.log("output:", output);
+    console.log("errors:", errors);
 
     assertEquals(code, 0);
 
-    // const p = Deno.run({
-    //   cmd: ["deno", "run", "-A", "./bin/export.ts"],
-    //   stdout: "piped",
-    //   stderr: "piped",
-    // });
+    // make sure proper config is used
+    const targetConfig = td + "/jurassic.json";
+    assert(
+      // re: https://github.com/denoland/deno/issues/22309
+      output.includes("Using config from: " + targetConfig) ||
+        output.includes("Using config from: " + "/private" + targetConfig)
+    );
 
-    // const { code } = await p.status();
-    // const rawOutput = await p.output();
-    // const output = new TextDecoder().decode(rawOutput);
-
-    // p.close();
-
-    // t.assertEquals(code, 0);
-    // t.assertEquals(output, "");
+    // check outputs
+    const exportContent = await Deno.readTextFile(`${td}/jurassic/export.ts`);
+    // spot check content inside the output modules
+    assert(exportContent.includes("export const exportNb"));
   });
 });
