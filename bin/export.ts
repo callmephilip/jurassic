@@ -19,7 +19,11 @@ if (import.meta.main) {
   }
 
   const config = await getConfig();
-  console.log("Jurassic version:", version);
-  console.log("Using config from:", config.configPath);
+  await Deno.stdout.write(
+    new TextEncoder().encode(`Jurassic version: ${version}\n`),
+  );
+  await Deno.stdout.write(
+    new TextEncoder().encode(`Using config from: ${config.configPath}\n`),
+  );
   await exportNb(args[0], config);
 }
