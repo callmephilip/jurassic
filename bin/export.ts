@@ -7,13 +7,13 @@ const denoJsonSchema = z.object({
 
 if (import.meta.main) {
   const { version } = denoJsonSchema.parse(
-    JSON.parse(await Deno.readTextFile("deno.json"))
+    JSON.parse(await Deno.readTextFile("deno.json")),
   );
   const args = Deno.args;
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run jsr:@jurassic/jurassic/export root_directory"
+      "Usage: deno run jsr:@jurassic/jurassic/export root_directory",
     );
     Deno.exit(1);
   }
