@@ -8,6 +8,7 @@ Deno.test("export bin", async (t) => {
 
   // recreate mini project in temp directory
   await Deno.copyFile("./jurassic.json", `${td}/jurassic.json`);
+  await Deno.copyFile("./deno.json", `${td}/deno.json`);
   await Deno.mkdir(`${td}/nbs`);
   await Deno.copyFile("./nbs/export.ipynb", `${td}/nbs/export.ipynb`);
 
@@ -32,7 +33,7 @@ Deno.test("export bin", async (t) => {
     assert(
       // re: https://github.com/denoland/deno/issues/22309
       output.includes("Using config from: " + targetConfig) ||
-        output.includes("Using config from: " + "/private" + targetConfig),
+        output.includes("Using config from: " + "/private" + targetConfig)
     );
 
     // check outputs

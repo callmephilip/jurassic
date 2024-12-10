@@ -22,12 +22,6 @@ jobs:
       - name: Run export
         run: deno task export
 
-      - name: show content of jurassic/export.ts
-        run: cat jurassic/export.ts
-
-      - name: git diff
-        run: git diff
-
       - name: Tests
         run: deno test --allow-all
 
