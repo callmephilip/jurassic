@@ -2,6 +2,9 @@
   "name": "@jurassic/jurassic",
   "version": "0.1.1",
   "license": "MIT",
+  "tasks": {
+    "export": "deno run -A jsr:@jurassic/jurassic/export ."
+  },
   "exports": {
     ".": "./mod.ts",
     "./export": "./bin/export.ts"

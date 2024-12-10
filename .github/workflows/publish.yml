@@ -19,6 +19,9 @@ jobs:
         with:
           deno-version: v2.x
  
+      - name: Run export
+        run: deno task export
+
       - name: Tests
         run: deno test --allow-all
 
