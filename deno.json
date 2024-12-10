@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "license": "MIT",
   "tasks": {
-    "export": "deno run -A jsr:@jurassic/jurassic/export ."
+    "export": "deno run -A jsr:@jurassic/jurassic/export . && deno lint && deno fmt"
   },
   "exports": {
     ".": "./mod.ts",

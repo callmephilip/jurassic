@@ -1,4 +1,4 @@
-import { assertEquals, assert } from "jsr:@std/assert";
+import { assert, assertEquals } from "jsr:@std/assert";
 import { dirListing } from "../jurassic/export.ts";
 import path from "npm:path";
 
@@ -32,7 +32,7 @@ Deno.test("export bin", async (t) => {
     assert(
       // re: https://github.com/denoland/deno/issues/22309
       output.includes("Using config from: " + targetConfig) ||
-        output.includes("Using config from: " + "/private" + targetConfig)
+        output.includes("Using config from: " + "/private" + targetConfig),
     );
 
     // check outputs

@@ -5,7 +5,7 @@ if (import.meta.main) {
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run jsr:@jurassic/jurassic/export root_directory"
+      "Usage: deno run jsr:@jurassic/jurassic/export root_directory",
     );
     Deno.exit(1);
   }
