@@ -2,9 +2,11 @@
 
 🦕 🔭 Shameless nbdev clone for Deno. WIP
 
-## Limitations 
+## Limitations
 
-- cannot get `jupyter execute --kernel_name=deno ./nbs/export.ipynb` to run; it does work for a simple hello module that does not have any visual stuff. is the issue with `Jupyter.display`? 
+- cannot get `jupyter execute --kernel_name=deno ./nbs/export.ipynb` to run; it
+  does work for a simple hello module that does not have any visual stuff. is
+  the issue with `Jupyter.display`?
 
 ```
 [NbClientApp] Executing ./nbs/export.ipynb
@@ -48,6 +50,6 @@ AttributeError: 'NoneType' object has no attribute 'get'
 import { assertEquals } from "jsr:@std/assert/equals";
 
 Deno.test("foo", () => {
-  assertEquals(1, 2)
-})
+  assertEquals(1, 2);
+});
 ```
