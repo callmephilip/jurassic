@@ -1,7 +1,8 @@
 {
   "tasks": {
     "lume": "echo \"import 'lume/cli.ts'\" | deno run --unstable -A -",
-    "serve": "deno task lume -s --port=8000"
+    "serve": "deno task lume -s --port=8000",
+    "build": "deno task lume"
   },
   "imports": {
     "lume/": "https://deno.land/x/lume@v2.3.3/",
