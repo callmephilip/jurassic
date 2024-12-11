@@ -1,6 +1,6 @@
 {
   "name": "@jurassic/jurassic",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "license": "MIT",
   "tasks": {
     "export": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno lint && deno fmt"
