@@ -1,3 +1,8 @@
-# Jurassic Docs
+---
+title: "First Page"
+nav_order: 1
+---
 
-This is static for now
+# First Page
+
+Hello Lumocs!

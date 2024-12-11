@@ -1,15 +1,10 @@
 {
-  "imports": {
-    "lume/": "https://deno.land/x/lume@v2.4.3/"
-  },
   "tasks": {
-    "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
-    "build": "deno task lume",
-    "serve": "deno task lume -s"
+    "lume": "echo \"import 'lume/cli.ts'\" | deno run --unstable -A -",
+    "serve": "deno task lume -s --port=8000"
   },
-  "compilerOptions": {
-    "types": [
-      "lume/types.ts"
-    ]
+  "imports": {
+    "lume/": "https://deno.land/x/lume@v2.3.3/",
+    "lumocs/": "https://deno.land/x/lumocs@0.1.3/"
   }
 }

@@ -1,0 +1,32 @@
+{
+  "lang": "en",
+  "layout": "page.njk",
+  "metas": {
+    "title": "=title",
+    "site": "Site Name",
+    "lang": "en",
+    "description": "=description"
+  },
+  "top_links": [
+    {
+      "icon": "fab fa-github",
+      "title": "GitHub Repository",
+      "url": "https://github.com/hexagon/lumocs"
+    },
+    {
+      "icon": "fab fa-npm",
+      "title": "NPM Library",
+      "url": "https://npmjs.com"
+    }
+  ],
+  "nav_links": [
+    {
+      "title": "GitHub Repository",
+      "url": "https://github.com/hexagon/lumocs"
+    },
+    {
+      "title": "NPM Library",
+      "url": "https://npmjs.com"
+    }
+  ]
+}
