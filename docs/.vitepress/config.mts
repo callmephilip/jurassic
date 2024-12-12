@@ -12,6 +12,10 @@ export default defineConfig({
       { text: "Examples", link: "/markdown-examples" },
     ],
 
+    search: {
+      provider: "local",
+    },
+
     sidebar: [
       {
         text: "Examples",
