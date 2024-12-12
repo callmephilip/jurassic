@@ -9,22 +9,23 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "Home", link: "/" },
-      { text: "Examples", link: "/markdown-examples" },
     ],
 
     search: {
       provider: "local",
     },
 
-    sidebar: [
-      {
-        text: "Examples",
-        items: [
-          { text: "Markdown Examples", link: "/markdown-examples" },
-          { text: "Runtime API Examples", link: "/api-examples" },
-        ],
-      },
-    ],
+    sidebar: [{
+      text: "Docs",
+      items: [
+        { "text": "docs.ipynb", "link": "/docs" },
+        { "text": "utils.ipynb", "link": "/utils" },
+        { "text": "config.ipynb", "link": "/config" },
+        { "text": "export.ipynb", "link": "/export" },
+        { "text": "notebooks.ipynb", "link": "/notebooks" },
+        { "text": "submodule/hello.ipynb", "link": "/submodule/hello" },
+      ],
+    }],
 
     socialLinks: [
       { icon: "github", link: "https://github.com/vuejs/vitepress" },

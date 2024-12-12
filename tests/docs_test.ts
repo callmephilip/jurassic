@@ -2,7 +2,7 @@ import { assert, assertEquals } from "jsr:@std/assert";
 import { dirListing } from "../jurassic/utils.ts";
 import path from "npm:path";
 
-Deno.test("export bin", async (t) => {
+Deno.test("docs bin", async (t) => {
   // setup temp stuff
   const td = await Deno.makeTempDir({});
 
@@ -16,7 +16,7 @@ Deno.test("export bin", async (t) => {
 
   await t.step("run export bin", async () => {
     const { code, stdout, stderr } = new Deno.Command(Deno.execPath(), {
-      args: ["run", "-A", path.resolve("./bin/export.ts"), "."],
+      args: ["run", "-A", path.resolve("./bin/docs.ts"), "."],
       cwd: td,
     }).outputSync();
 
@@ -37,8 +37,8 @@ Deno.test("export bin", async (t) => {
     );
 
     // check outputs
-    const exportContent = await Deno.readTextFile(`${td}/jurassic/export.ts`);
+    const exportContent = await Deno.readTextFile(`${td}/docs/export.md`);
     // spot check content inside the output modules
-    assert(exportContent.includes("export const exportNb"));
+    assert(exportContent.includes("# Export"));
   });
 });

@@ -6,6 +6,7 @@ const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
+  docsPath: z.string().default("."),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -28,8 +29,9 @@ const findConfig = async (
 export const getTestConfig = (baseDir: string): Config =>
   configSchema.parse({
     configPath: path.resolve(baseDir, "jurassic.json"),
-    nbsPath: path.join(baseDir, "nbs"),
-    outputPath: path.join(baseDir, "jurassic"),
+    nbsPath: path.resolve(baseDir, "nbs"),
+    outputPath: path.resolve(baseDir, "jurassic"),
+    docsPath: path.resolve(baseDir, "docs"),
   });
 export const getConfig = async (): Promise<Config> => {
   const cf = await findConfig();
@@ -39,5 +41,6 @@ export const getConfig = async (): Promise<Config> => {
   );
   c.nbsPath = path.join(dcf, c.nbsPath);
   c.outputPath = path.join(dcf, c.outputPath);
+  c.docsPath = path.join(dcf, c.docsPath);
   return c;
 };

@@ -1,4 +1,5 @@
 {
   "nbsPath": "nbs",
-  "outputPath": "jurassic"
+  "outputPath": "jurassic",
+  "docsPath": "docs"
 }
