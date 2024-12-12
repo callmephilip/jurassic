@@ -42,7 +42,7 @@ jobs:
         with:
           deno-version: v2.x
       - name: Run export
-        run: deno task export
+        run: deno task build
       - name: Tests
         run: deno test --allow-all
       - name: Docs
