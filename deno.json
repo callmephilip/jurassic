@@ -3,13 +3,14 @@
   "version": "0.1.8",
   "license": "MIT",
   "tasks": {
-    "export": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno lint && deno fmt"
+    "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno check ./jurassic/*.ts && deno lint && deno fmt"
   },
   "exports": {
     ".": "./mod.ts",
     "./export": "./bin/export.ts"
   },
   "imports": {
-    "zod": "npm:zod@^3.23.8"
+    "zod": "npm:zod@^3.23.8",
+    "jurassic/": "./jurassic/"
   }
 }
