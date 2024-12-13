@@ -11,7 +11,11 @@
     "./export": "./bin/export.ts"
   },
   "imports": {
+    "typescript": "npm:typescript@^5.7.2",
     "zod": "npm:zod@^3.23.8",
     "jurassic/": "./jurassic/"
+  },
+  "lint": {
+    "exclude": ["docs"]
   }
 }

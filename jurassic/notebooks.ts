@@ -3,9 +3,20 @@
 import path from "node:path";
 import { z } from "zod";
 import type { Config } from "jurassic/config.ts";
+const cellOutputDataSchema = z.object({
+  "text/markdown": z.array(z.string()).optional(),
+  "text/plain": z.array(z.string()).optional(),
+});
+
+const cellOutputSchema = z.object({
+  text: z.array(z.string()).optional(),
+  data: cellOutputDataSchema.optional(),
+});
+
 const cellSchema = z.object({
   cell_type: z.enum(["code", "markdown"]),
   source: z.array(z.string()),
+  outputs: z.array(cellOutputSchema).optional(),
 });
 const nbSchema = z.object({ cells: z.array(cellSchema) });
 
@@ -14,6 +25,22 @@ export type Nb = z.infer<typeof nbSchema>;
 
 export const loadNb = async (nbPath: string): Promise<Nb> =>
   nbSchema.parse(JSON.parse(await Deno.readTextFile(nbPath)));
+export const getCellOutput = (cell: Cell): string => {
+  let result = "";
+  if (!cell.outputs) return result;
+  for (const output of cell.outputs) {
+    if (output.text) {
+      result += output.text.join("\n");
+    }
+    if (output.data) {
+      const c = output.data["text/markdown"] || output.data["text/plain"] || [];
+      for (const line of c) {
+        result += line;
+      }
+    }
+  }
+  return result;
+};
 export const getNotebooksToProcess = async (
   notebookPath: string,
   config: Config,

@@ -2,9 +2,47 @@
 
 import path from "node:path";
 import type { Config } from "jurassic/config.ts";
-import { getNotebooksToProcess, loadNb } from "jurassic/notebooks.ts";
+import { getExportedDefinitions } from "jurassic/utils.ts";
+import {
+  getCellOutput,
+  getNotebooksToProcess,
+  loadNb,
+} from "jurassic/notebooks.ts";
 import type { Cell } from "jurassic/notebooks.ts";
-const isDocCell = (cell: Cell): boolean => cell.cell_type === "markdown";
+export const isDocCell = (cell: Cell): boolean =>
+  cell.cell_type === "markdown" ||
+  (cell.cell_type === "code" &&
+    cell.source.length > 0 &&
+    !cell.source[0].match(/^\/\/\S*|\S*export/gi));
+const wrapCode = (code: string): string => "```typescript\n" + code + "\n```\n";
+
+export const processCell = (cell: Cell): string => {
+  if (cell.cell_type === "markdown") {
+    // markdown cells - just show content directly
+    return cell.source.join("");
+  }
+
+  if (cell.cell_type === "code") {
+    // code cells - show code and output
+    const code = cell.source.join("");
+    const exports = getExportedDefinitions(code);
+
+    if (!exports) {
+      return (
+        wrapCode(code) +
+        "\n" +
+        getCellOutput(cell)
+      );
+    }
+
+    return exports.reduce(
+      (acc, e) => acc + "\n" + `## ${e.name}` + "\n\n" + wrapCode(e.signature),
+      "",
+    );
+  }
+
+  return "";
+};
 const moduleHeader = (): string => `
 ---
 outline: deep
@@ -19,8 +57,8 @@ const processNb = async (
   console.log("Processing notebook", moduleName);
   const nb = await loadNb(nbPath);
   // doc cells only
-  return nb.cells.filter((cell) => isDocCell(cell)).reduce(
-    (acc, cell) => acc + "\n" + cell.source.join(""),
+  return nb.cells.reduce(
+    (acc, cell) => acc + "\n\n" + processCell(cell),
     moduleHeader(),
   ).trim();
 };
@@ -111,6 +149,7 @@ export default defineConfig({
 const gitIgnore = `
 node_modules
 .vitepress/dist
+.vitepress/cache
 `.trim();
 export const generateDocs = async (
   notebookPath: string,

@@ -33,7 +33,7 @@ Deno.test("docs bin", async (t) => {
     assert(
       // re: https://github.com/denoland/deno/issues/22309
       output.includes("Using config from: " + targetConfig) ||
-        output.includes("Using config from: " + "/private" + targetConfig)
+        output.includes("Using config from: " + "/private" + targetConfig),
     );
 
     // check outputs
