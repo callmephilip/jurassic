@@ -6,7 +6,41 @@ const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
-  docsPath: z.string().default("."),
+  docsInputPath: z.string().default("."),
+  docsOutputPath: z.string().default("."),
+  vitepress: z.object({
+    title: z.string(),
+    description: z.string(),
+    base: z.string(),
+    themeConfig: z.object({
+      nav: z.array(
+        z.object({
+          text: z.string(),
+          link: z.string(),
+        }),
+      ),
+      search: z.object({
+        provider: z.string(),
+      }),
+      sidebar: z.array(
+        z.object({
+          text: z.string(),
+          items: z.array(
+            z.object({
+              text: z.string(),
+              link: z.string(),
+            }),
+          ),
+        }),
+      ),
+      socialLinks: z.array(
+        z.object({
+          icon: z.string(),
+          link: z.string(),
+        }),
+      ),
+    }),
+  }),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -31,7 +65,23 @@ export const getTestConfig = (baseDir: string): Config =>
     configPath: path.resolve(baseDir, "jurassic.json"),
     nbsPath: path.resolve(baseDir, "nbs"),
     outputPath: path.resolve(baseDir, "jurassic"),
-    docsPath: path.resolve(baseDir, "docs"),
+    docsInputPath: path.resolve(baseDir, "docs"),
+    docsOutputPath: path.resolve(baseDir, "_docs"),
+    vitepress: {
+      title: "Jurassic",
+      description: "Jurassic docs",
+      base: "/jurassic/",
+      themeConfig: {
+        nav: [{ text: "Home", link: "/" }],
+        search: {
+          provider: "local",
+        },
+        sidebar: [],
+        socialLinks: [
+          { icon: "github", link: "https://github.com/callmephilip/jurassic" },
+        ],
+      },
+    },
   });
 export const getConfig = async (): Promise<Config> => {
   const cf = await findConfig();
@@ -41,6 +91,7 @@ export const getConfig = async (): Promise<Config> => {
   );
   c.nbsPath = path.join(dcf, c.nbsPath);
   c.outputPath = path.join(dcf, c.outputPath);
-  c.docsPath = path.join(dcf, c.docsPath);
+  c.docsInputPath = path.join(dcf, c.docsInputPath);
+  c.docsOutputPath = path.join(dcf, c.docsOutputPath);
   return c;
 };

@@ -10,11 +10,7 @@ import {
   loadNb,
 } from "jurassic/notebooks.ts";
 import type { Cell, Nb } from "jurassic/notebooks.ts";
-export const isDocCell = (cell: Cell): boolean =>
-  cell.cell_type === "markdown" ||
-  (cell.cell_type === "code" &&
-    cell.source.length > 0 &&
-    !cell.source[0].match(/^\/\/\S*|\S*export/gi));
+import { copySync } from "@std/fs";
 const wrapCode = (code: string): string => "```typescript\n" + code + "\n```\n";
 
 export const processCell = (cell: Cell): string => {
@@ -65,32 +61,6 @@ const processNb = async (
     ).trim(),
   ];
 };
-const indexMd = `
----
-# https://vitepress.dev/reference/default-theme-home-page
-layout: home
-
-hero:
-  name: "Jurassic"
-  text: "Jurassic docs"
-  tagline: My great project tagline
-  actions:
-    - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
-    - theme: alt
-      text: API Examples
-      link: /api-examples
-
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
----
-`.trim();
 const packageJSON = `
 {
   "name": "docs",
@@ -109,51 +79,27 @@ const packageJSON = `
     "vitepress": "^1.5.0"
   }
 }`.trim();
-const vitePressConfig = (notebooks: Nb[], mds: string[]): string => {
-  const docs = `{
-        text: "Docs",
-        items: ${
-    JSON.stringify(
-      // sort by notebook name length for now
-      [...notebooks].map((nb, i) => ({
-        text: getNbTitle(nb),
-        link: `/${mds[i].replace(".md", "")}`,
-      })),
-    )
-  },
-      },`;
+const vitePressConfig = (
+  config: Config,
+  notebooks: Nb[],
+  mds: string[],
+): string => {
+  const docs = {
+    text: "Docs",
+    items: [...notebooks].map((nb, i) => ({
+      text: getNbTitle(nb),
+      link: `/${mds[i].replace(".md", "")}`,
+    })),
+  };
+  const c = { ...config.vitepress };
+  c.themeConfig.sidebar = [...c.themeConfig.sidebar, docs];
+
   return `
 import { defineConfig } from "vitepress";
-
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
-  title: "Jurassic",
-  description: "Jurassic docs",
-  base: "/jurassic/",
-  themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: "Home", link: "/" },
-    ],
-
-    search: {
-      provider: "local",
-    },
-
-    sidebar: [${docs}],
-
-    socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" },
-    ],
-  },
-});
+export default defineConfig(${JSON.stringify(c, null, 2)});
 `.trim();
 };
-const gitIgnore = `
-node_modules
-.vitepress/dist
-.vitepress/cache
-`.trim();
 export const generateDocs = async (
   notebookPath: string,
   config: Config,
@@ -166,8 +112,15 @@ export const generateDocs = async (
   const mds: string[] = [];
 
   try {
-    await Deno.stat(config.docsPath);
-    await Deno.remove(config.docsPath, { recursive: true });
+    await Deno.stat(config.docsOutputPath);
+    await Deno.remove(config.docsOutputPath, { recursive: true });
+  } catch {
+    // noop
+  }
+
+  try {
+    await Deno.stat(config.docsInputPath);
+    copySync(config.docsInputPath, config.docsOutputPath);
   } catch {
     // noop
   }
@@ -178,7 +131,10 @@ export const generateDocs = async (
     const outputFile = notebook.replace(".ipynb", ".md");
     mds.push(outputFile);
     // make sure we preserve subdirectories if any
-    const outputDir = path.join(config.docsPath, path.dirname(outputFile));
+    const outputDir = path.join(
+      config.docsOutputPath,
+      path.dirname(outputFile),
+    );
     await Deno.mkdir(outputDir, { recursive: true });
 
     const [nb, md] = await processNb(
@@ -186,21 +142,22 @@ export const generateDocs = async (
       notebook,
     );
     notebooks.push(nb);
-    await Deno.writeTextFile(path.join(config.docsPath, outputFile), md);
+    await Deno.writeTextFile(path.join(config.docsOutputPath, outputFile), md);
   }
 
   const filesToWrite = {
-    "index.md": indexMd,
     "package.json": packageJSON,
-    ".vitepress/config.mts": vitePressConfig(notebooks, mds),
-    ".gitignore": gitIgnore,
+    ".vitepress/config.mts": vitePressConfig(config, notebooks, mds),
   };
 
   // create .vitepress directory
-  await Deno.mkdir(path.join(config.docsPath, ".vitepress"));
+  await Deno.mkdir(path.join(config.docsOutputPath, ".vitepress"));
 
   // Write all files in a loop
   for (const [filename, content] of Object.entries(filesToWrite)) {
-    await Deno.writeTextFile(path.join(config.docsPath, filename), content);
+    await Deno.writeTextFile(
+      path.join(config.docsOutputPath, filename),
+      content,
+    );
   }
 };
