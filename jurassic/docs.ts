@@ -151,7 +151,9 @@ export const generateDocs = async (
   };
 
   // create .vitepress directory if it doesn't exist
-  if (!(await Deno.stat(path.join(config.docsOutputPath, ".vitepress")))) {
+  try {
+    await Deno.stat(path.join(config.docsOutputPath, ".vitepress"));
+  } catch {
     await Deno.mkdir(path.join(config.docsOutputPath, ".vitepress"));
   }
 
