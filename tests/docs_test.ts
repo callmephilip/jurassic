@@ -33,11 +33,11 @@ Deno.test("docs bin", async (t) => {
     assert(
       // re: https://github.com/denoland/deno/issues/22309
       output.includes("Using config from: " + targetConfig) ||
-        output.includes("Using config from: " + "/private" + targetConfig),
+        output.includes("Using config from: " + "/private" + targetConfig)
     );
 
     // check outputs
-    const exportContent = await Deno.readTextFile(`${td}/docs/export.md`);
+    const exportContent = await Deno.readTextFile(`${td}/_docs/export.md`);
     // spot check content inside the output modules
     assert(exportContent.includes("# Export"));
   });
