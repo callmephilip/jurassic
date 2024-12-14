@@ -5,10 +5,11 @@ import type { Config } from "jurassic/config.ts";
 import { getExportedDefinitions } from "jurassic/utils.ts";
 import {
   getCellOutput,
+  getNbTitle,
   getNotebooksToProcess,
   loadNb,
 } from "jurassic/notebooks.ts";
-import type { Cell } from "jurassic/notebooks.ts";
+import type { Cell, Nb } from "jurassic/notebooks.ts";
 export const isDocCell = (cell: Cell): boolean =>
   cell.cell_type === "markdown" ||
   (cell.cell_type === "code" &&
@@ -52,15 +53,17 @@ outline: deep
 const processNb = async (
   nbPath: string,
   moduleName: string,
-): Promise<string> => {
+): Promise<[Nb, string]> => {
   // TODO: make use of moduleName
   console.log("Processing notebook", moduleName);
   const nb = await loadNb(nbPath);
-  // doc cells only
-  return nb.cells.reduce(
-    (acc, cell) => acc + "\n\n" + processCell(cell),
-    moduleHeader(),
-  ).trim();
+  return [
+    nb,
+    nb.cells.reduce(
+      (acc, cell) => acc + "\n\n" + processCell(cell),
+      moduleHeader(),
+    ).trim(),
+  ];
 };
 const indexMd = `
 ---
@@ -95,7 +98,7 @@ const packageJSON = `
   "description": "",
   "main": "index.js",
   "scripts": {
-    "docs:dev": "vitepress dev",
+    "docs:dev": "vitepress dev --open",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
   },
@@ -106,15 +109,15 @@ const packageJSON = `
     "vitepress": "^1.5.0"
   }
 }`.trim();
-const vitePressConfig = (notebooks: string[]): string => {
+const vitePressConfig = (notebooks: Nb[], mds: string[]): string => {
   const docs = `{
         text: "Docs",
         items: ${
     JSON.stringify(
       // sort by notebook name length for now
-      [...notebooks].sort((a, b) => a.length - b.length).map((nb) => ({
-        text: nb,
-        link: `/${nb.replace(".ipynb", "")}`,
+      [...notebooks].map((nb, i) => ({
+        text: getNbTitle(nb),
+        link: `/${mds[i].replace(".md", "")}`,
       })),
     )
   },
@@ -159,6 +162,8 @@ export const generateDocs = async (
     notebookPath,
     config,
   );
+  const notebooks: Nb[] = [];
+  const mds: string[] = [];
 
   try {
     await Deno.stat(config.docsPath);
@@ -171,19 +176,23 @@ export const generateDocs = async (
   for (const notebook of notebooksToProcess) {
     // output module is the same as the input notebook, but with .ts extension
     const outputFile = notebook.replace(".ipynb", ".md");
+    mds.push(outputFile);
     // make sure we preserve subdirectories if any
     const outputDir = path.join(config.docsPath, path.dirname(outputFile));
     await Deno.mkdir(outputDir, { recursive: true });
-    await Deno.writeTextFile(
-      path.join(config.docsPath, outputFile),
-      await processNb(path.resolve(config.nbsPath, notebook), notebook),
+
+    const [nb, md] = await processNb(
+      path.resolve(config.nbsPath, notebook),
+      notebook,
     );
+    notebooks.push(nb);
+    await Deno.writeTextFile(path.join(config.docsPath, outputFile), md);
   }
 
   const filesToWrite = {
     "index.md": indexMd,
     "package.json": packageJSON,
-    ".vitepress/config.mts": vitePressConfig(notebooksToProcess),
+    ".vitepress/config.mts": vitePressConfig(notebooks, mds),
     ".gitignore": gitIgnore,
   };
 

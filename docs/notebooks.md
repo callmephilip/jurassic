@@ -24,6 +24,19 @@ export type Nb = z.infer<typeof nbSchema>;
 const loadNb = (nbPath: string) => Promise<Nb>;
 ```
 
+# Get notebook title
+
+Try to get a human readable title for a notebook using the following approach:
+
+- grab the first md cell in the notebook, and return first h1 inside of
+- if this fails, return notebook filename
+
+## getNbTitle
+
+```typescript
+const getNbTitle = (nb: Nb) => string;
+```
+
 # Parse cell output
 
 Jurassic needs to be able to convert individual cell output to test that can be

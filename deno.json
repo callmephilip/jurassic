@@ -4,7 +4,8 @@
   "license": "MIT",
   "tasks": {
     "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno check ./jurassic/*.ts && deno lint && deno fmt",
-    "docs": "deno run -A --reload ./bin/docs.ts . && deno lint && deno fmt"
+    "docs": "deno run -A --reload ./bin/docs.ts . && deno lint && deno fmt",
+    "docs:dev": "deno run -A --reload ./bin/docs.ts . && deno lint && deno fmt && cd docs && pnpm install && pnpm run docs:dev"
   },
   "exports": {
     ".": "./mod.ts",

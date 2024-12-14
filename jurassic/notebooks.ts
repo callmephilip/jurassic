@@ -18,13 +18,29 @@ const cellSchema = z.object({
   source: z.array(z.string()),
   outputs: z.array(cellOutputSchema).optional(),
 });
-const nbSchema = z.object({ cells: z.array(cellSchema) });
+const nbSchema = z.object({ filename: z.string(), cells: z.array(cellSchema) });
 
 export type Cell = z.infer<typeof cellSchema>;
 export type Nb = z.infer<typeof nbSchema>;
 
 export const loadNb = async (nbPath: string): Promise<Nb> =>
-  nbSchema.parse(JSON.parse(await Deno.readTextFile(nbPath)));
+  nbSchema.parse(
+    Object.assign(
+      { filename: nbPath },
+      JSON.parse(await Deno.readTextFile(nbPath)),
+    ),
+  );
+export const getNbTitle = (nb: Nb): string => {
+  const mds = nb.cells.length > 0 && nb.cells[0].cell_type === "markdown"
+    ? nb.cells[0].source
+    : null;
+  const md = mds && mds.length > 0 && mds[0].trim().startsWith("# ")
+    ? mds[0]
+    : null;
+  return md
+    ? md.replace(/^# /, "").replaceAll("\n", "").trim()
+    : path.basename(nb.filename);
+};
 export const getCellOutput = (cell: Cell): string => {
   let result = "";
   if (!cell.outputs) return result;

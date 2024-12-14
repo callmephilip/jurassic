@@ -18,12 +18,12 @@ export default defineConfig({
     sidebar: [{
       text: "Docs",
       items: [
-        { "text": "docs.ipynb", "link": "/docs" },
-        { "text": "utils.ipynb", "link": "/utils" },
-        { "text": "config.ipynb", "link": "/config" },
-        { "text": "export.ipynb", "link": "/export" },
-        { "text": "notebooks.ipynb", "link": "/notebooks" },
-        { "text": "submodule/hello.ipynb", "link": "/submodule/hello" },
+        { "text": "Helpers", "link": "/utils" },
+        { "text": "Hello", "link": "/submodule/hello" },
+        { "text": "Docs", "link": "/docs" },
+        { "text": "Locate and Parse notebooks", "link": "/notebooks" },
+        { "text": "Configuration", "link": "/config" },
+        { "text": "Export", "link": "/export" },
       ],
     }],
 
