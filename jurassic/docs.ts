@@ -85,11 +85,11 @@ const vitePressConfig = (
   mds: string[],
 ): string => {
   const docs = {
-    text: "Docs",
+    text: "Reference",
     items: [...notebooks].map((nb, i) => ({
       text: getNbTitle(nb),
       link: `/${mds[i].replace(".md", "")}`,
-    })),
+    })).sort((a, b) => a.text.localeCompare(b.text)),
   };
   const c = { ...config.vitepress };
   c.themeConfig.sidebar = [...c.themeConfig.sidebar, docs];
