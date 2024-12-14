@@ -1,13 +1,11 @@
-import { exportNb } from "jurassic/export.ts";
+import { generateDocs } from "jurassic/docs.ts";
 import { getConfig } from "jurassic/config.ts";
 
 if (import.meta.main) {
   const args = Deno.args;
 
   if (args.length !== 1) {
-    console.error(
-      "Usage: deno run jsr:@jurassic/jurassic/export root_directory",
-    );
+    console.error("Usage: deno run jsr:@jurassic/jurassic/docs root_directory");
     Deno.exit(1);
   }
 
@@ -15,5 +13,5 @@ if (import.meta.main) {
   await Deno.stdout.write(
     new TextEncoder().encode(`Using config from: ${config.configPath}\n`),
   );
-  await exportNb(args[0], config);
+  await generateDocs(args[0], config);
 }
