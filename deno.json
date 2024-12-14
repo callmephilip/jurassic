@@ -18,6 +18,6 @@
     "jurassic/": "./jurassic/"
   },
   "lint": {
-    "exclude": ["docs"]
+    "exclude": ["_docs", "docs"]
   }
 }

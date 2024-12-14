@@ -150,8 +150,10 @@ export const generateDocs = async (
     ".vitepress/config.mts": vitePressConfig(config, notebooks, mds),
   };
 
-  // create .vitepress directory
-  await Deno.mkdir(path.join(config.docsOutputPath, ".vitepress"));
+  // create .vitepress directory if it doesn't exist
+  if (!(await Deno.stat(path.join(config.docsOutputPath, ".vitepress")))) {
+    await Deno.mkdir(path.join(config.docsOutputPath, ".vitepress"));
+  }
 
   // Write all files in a loop
   for (const [filename, content] of Object.entries(filesToWrite)) {

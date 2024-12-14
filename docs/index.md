@@ -10,4 +10,7 @@ hero:
     - theme: brand
       text: Get started
       link: /get-started
+  image:
+    src: /jurassic.png
+    alt: Jurassic
 ---
