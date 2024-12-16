@@ -3,12 +3,7 @@
 import path from "node:path";
 import type { Config } from "jurassic/config.ts";
 import { getExportedDefinitions } from "jurassic/utils.ts";
-import {
-  getCellOutput,
-  getNbTitle,
-  getNotebooksToProcess,
-  loadNb,
-} from "jurassic/notebooks.ts";
+import { getCellOutput, getNbTitle, loadNb } from "jurassic/notebooks.ts";
 import type { Cell, Nb } from "jurassic/notebooks.ts";
 import { copySync } from "@std/fs";
 const wrapCode = (code: string): string => "```typescript\n" + code + "\n```\n";
@@ -82,14 +77,8 @@ import { defineConfig } from "vitepress";
 export default defineConfig(${JSON.stringify(c, null, 2)});
 `.trim();
 };
-export const generateDocs = async (
-  notebookPath: string,
-  config: Config,
-): Promise<void> => {
-  const notebooksToProcess: string[] = await getNotebooksToProcess(
-    notebookPath,
-    config,
-  );
+export const generateDocs = async (config: Config): Promise<void> => {
+  const notebooksToProcess: string[] = config.notebooks;
   const notebooks: Nb[] = [];
   const mds: string[] = [];
 

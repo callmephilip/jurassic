@@ -17,6 +17,41 @@ export const dirListing = async (dir: string, d = 0): Promise<string> => {
   }
   return md;
 };
+export const getNotebooksToProcess = (
+  notebookPath: string,
+  nbsPath: string,
+): string[] => {
+  const fullPath = path.join(nbsPath, notebookPath);
+  const fileInfo = Deno.statSync(fullPath);
+  const notebooksToProcess: string[] = [];
+
+  if (fileInfo.isDirectory) {
+    // if target is a directory, let's go through all files/directories inside
+    for (const file of Deno.readDirSync(fullPath)) {
+      if (file.isDirectory) {
+        // got another directory? delegate to another getNotebooksToProcess
+        const childNbs = getNotebooksToProcess(
+          path.join(notebookPath, file.name),
+          nbsPath,
+        );
+        for (const nb of childNbs) {
+          notebooksToProcess.push(nb);
+        }
+        continue;
+      }
+
+      // we are only interested in notebooks
+      if (!file.name.endsWith(".ipynb")) continue;
+
+      // relative path only, puhleeze
+      notebooksToProcess.push(
+        path.relative(nbsPath, path.join(fullPath, file.name)),
+      );
+    }
+  }
+
+  return notebooksToProcess;
+};
 interface SymbolDefinition {
   name: string;
   kind: string;

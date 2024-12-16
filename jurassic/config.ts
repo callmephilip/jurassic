@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import path from "node:path";
+import { getNotebooksToProcess } from "jurassic/utils.ts";
 const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
@@ -42,6 +43,10 @@ const configSchema: z.Schema = z.object({
       ),
     }),
   }),
+}).transform((data) => {
+  return Object.assign(data, {
+    notebooks: getNotebooksToProcess(".", data.nbsPath),
+  });
 });
 
 export type Config = z.infer<typeof configSchema>;

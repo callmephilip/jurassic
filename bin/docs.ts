@@ -13,5 +13,5 @@ if (import.meta.main) {
   await Deno.stdout.write(
     new TextEncoder().encode(`Using config from: ${config.configPath}\n`),
   );
-  await generateDocs(args[0], config);
+  await generateDocs(config);
 }
