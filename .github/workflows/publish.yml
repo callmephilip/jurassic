@@ -31,9 +31,6 @@ jobs:
       - name: Install jupyter deno kernel
         run: deno jupyter --unstable --install
 
-      - name: Run notebook
-        run: jupyter execute --kernel_name=deno ./nbs/submodule/hello.ipynb
-
       - name: Run export
         run: deno task build
 

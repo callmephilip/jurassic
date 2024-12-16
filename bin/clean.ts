@@ -1,4 +1,6 @@
+import path from "node:path";
 import { getConfig } from "jurassic/config.ts";
+import { cleanNb } from "jurassic/notebooks.ts";
 
 if (import.meta.main) {
   const config = await getConfig();
@@ -11,5 +13,10 @@ if (import.meta.main) {
   console.log(">>> Code", code);
   if (code !== 0) {
     throw new Error("Failed to clean notebooks");
+  }
+
+  // additional clean up
+  for (const nb of config.notebooks) {
+    await cleanNb(path.resolve(config.nbsPath, nb));
   }
 }

@@ -56,3 +56,24 @@ export const getCellOutput = (cell: Cell): string => {
   }
   return result;
 };
+export const cleanNb = (nbPath: string) => {
+  const d = JSON.parse(Deno.readTextFileSync(nbPath));
+  Deno.writeTextFileSync(
+    nbPath,
+    JSON.stringify(
+      Object.assign({}, d, {
+        cells: d.cells.map((c: Cell) => {
+          if (
+            c.cell_type !== "code" ||
+            !c.source.join("\n").includes("Deno.test")
+          ) {
+            return c;
+          }
+          return Object.assign({}, c, {
+            outputs: [],
+          });
+        }),
+      }),
+    ),
+  );
+};
