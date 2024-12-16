@@ -9,4 +9,7 @@ if (import.meta.main) {
   console.log(new TextDecoder().decode(stdout));
   console.error(new TextDecoder().decode(stderr));
   console.log(">>> Code", code);
+  if (code !== 0) {
+    throw new Error("Failed to clean notebooks");
+  }
 }
