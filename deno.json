@@ -3,7 +3,7 @@
   "version": "0.1.14",
   "license": "MIT",
   "tasks": {
-    "build": "deno run -A ./bin/export.ts . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
+    "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
     "runnbs": "deno run --allow-read --allow-env --allow-run jsr:@jurassic/jurassic/runnbs",
     "clean": "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
     "docs": "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
