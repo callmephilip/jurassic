@@ -13,4 +13,4 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    subprocess.run(["nbdev_clean", "--fname", parse_args().nbspath]) 
+    subprocess.run(["./.jurassic/env/bin/nbdev_clean", "--fname", parse_args().nbspath]) 
