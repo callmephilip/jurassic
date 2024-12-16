@@ -1,15 +1,28 @@
-// import { exportNb } from "jurassic/export.ts";
-// import { getConfig } from "jurassic/config.ts";
+import { getConfig } from "jurassic/config.ts";
+import path from "node:path";
 
-// if (import.meta.main) {
-//   const args = Deno.args;
-//   const command = new Deno.Command("python", {
-//     args: [".jurassic/install.py", "--env_path=.jurassic/env"],
-//   });
-//   const { code, stderr } = command.outputSync();
+const envPath = ".jurassic/env";
 
-//   if (code !== 0) {
-//     console.assert("world\n" === new TextDecoder().decode(stderr));
-//     throw new Error("Failed to run notebooks");
-//   }
-// }
+if (import.meta.main) {
+  const config = await getConfig();
+  const command = new Deno.Command("python", {
+    args: [".jurassic/install.py", `--env_path=${envPath}`],
+  });
+  const { code, stderr } = command.outputSync();
+
+  if (code !== 0) {
+    console.assert("world\n" === new TextDecoder().decode(stderr));
+    throw new Error("Failed to run notebooks");
+  }
+
+  for (const nb of config.notebooks) {
+    console.log(`Running notebook: ${nb}`);
+    const command = new Deno.Command(".jurassic/runnb.py", {
+      args: [path.resolve(config.nbsPath, nb), `--nbs_path=${config.nbsPath}`],
+    });
+    const { code, stderr, stdout } = command.outputSync();
+    console.log(new TextDecoder().decode(stdout));
+    console.error(new TextDecoder().decode(stderr));
+    console.log(">>> Code", code);
+  }
+}
