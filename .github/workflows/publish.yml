@@ -37,6 +37,9 @@ jobs:
       - name: Run export
         run: deno task build
 
+      - name: Check on git
+        run: git diff
+
       - name: Tests
         run: deno test --allow-all
 
