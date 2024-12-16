@@ -30,5 +30,5 @@ if __name__ == "__main__":
         create_python_env(
             env_path=env_path,
             # re: https://github.com/jupyter/nbclient/issues/321
-            requirements=["nbformat", "git+https://github.com/callmephilip/nbclient.git@fix/transient-set-to-none"]
+            requirements=["nbformat", "nbdev", "git+https://github.com/callmephilip/nbclient.git@fix/transient-set-to-none"]
         )
