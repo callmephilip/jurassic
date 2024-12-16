@@ -31,7 +31,11 @@ export const getNotebooksToProcess = (
 
   if (fileInfo.isDirectory) {
     // if target is a directory, let's go through all files/directories inside
-    for (const file of Deno.readDirSync(fullPath)) {
+    for (
+      const file of [...Deno.readDirSync(fullPath)].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
+    ) {
       if (file.isDirectory) {
         // got another directory? delegate to another getNotebooksToProcess
         const childNbs = getNotebooksToProcess(
