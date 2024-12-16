@@ -16,4 +16,15 @@ if (import.meta.main) {
     new TextEncoder().encode(`Using config from: ${config.configPath}\n`),
   );
   await exportNb(args[0], config);
+
+  // check build
+  const command = new Deno.Command(Deno.execPath(), {
+    args: ["check", `${config.outputPath}/*.ts`],
+  });
+
+  const { code, stderr } = await command.output();
+
+  if (code !== 0) {
+    console.error(new TextDecoder().decode(stderr));
+  }
 }
