@@ -3,16 +3,20 @@
 import path from "node:path";
 import * as ts from "typescript";
 // create markdown representation of the directory listing files and subdirectories
-export const dirListing = async (dir: string, d = 0): Promise<string> => {
+export const dirListing = (dir: string, d = 0): string => {
   if (d > 10) {
     return "";
   }
 
   let md = "";
-  for await (const f of Deno.readDir(dir)) {
+  for (
+    const f of [...Deno.readDirSync(dir)].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
+  ) {
     md += `${"  ".repeat(d)}- ${f.name}\n`;
     if (f.isDirectory) {
-      md += await dirListing(path.join(dir, f.name), d + 1);
+      md += dirListing(path.join(dir, f.name), d + 1);
     }
   }
   return md;

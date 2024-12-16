@@ -12,7 +12,7 @@ Deno.test("docs bin", async (t) => {
   await Deno.mkdir(`${td}/nbs`);
   await Deno.copyFile("./nbs/export.ipynb", `${td}/nbs/export.ipynb`);
 
-  console.log(await dirListing(td));
+  console.log(dirListing(td));
 
   await t.step("run export bin", async () => {
     const { code, stdout, stderr } = new Deno.Command(Deno.execPath(), {
