@@ -61,24 +61,6 @@ const processNb = async (
     ).trim(),
   ];
 };
-const packageJSON = `
-{
-  "name": "docs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "docs:dev": "vitepress dev --open",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "vitepress": "^1.5.0"
-  }
-}`.trim();
 const vitePressConfig = (
   config: Config,
   notebooks: Nb[],
@@ -146,7 +128,6 @@ export const generateDocs = async (
   }
 
   const filesToWrite = {
-    "package.json": packageJSON,
     ".vitepress/config.mts": vitePressConfig(config, notebooks, mds),
   };
 
