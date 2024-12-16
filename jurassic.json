@@ -12,6 +12,7 @@
       "search": {
         "provider": "local"
       },
+      "logo": "/jurassic.png",
       "nav": [],
       "sidebar": [
         {
