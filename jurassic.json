@@ -7,6 +7,7 @@
     "title": "Jurassic",
     "description": "Jurassic docs",
     "base": "/jurassic/",
+    "cleanUrls": true,
     "themeConfig": {
       "search": {
         "provider": "local"

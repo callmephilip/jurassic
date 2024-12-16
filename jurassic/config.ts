@@ -12,6 +12,7 @@ const configSchema: z.Schema = z.object({
     title: z.string(),
     description: z.string(),
     base: z.string(),
+    cleanUrls: z.boolean().default(true),
     themeConfig: z.object({
       nav: z.array(
         z.object({
