@@ -1,6 +1,6 @@
 {
   "name": "@jurassic/jurassic",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "license": "MIT",
   "tasks": {
     "build": "deno run -A ./bin/export.ts . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
