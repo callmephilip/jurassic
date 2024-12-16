@@ -15,14 +15,30 @@ if (import.meta.main) {
     throw new Error("Failed to run notebooks");
   }
 
-  for (const nb of config.notebooks) {
-    console.log(`Running notebook: ${nb}`);
-    const command = new Deno.Command(".jurassic/runnb.py", {
-      args: [path.resolve(config.nbsPath, nb), `--nbs_path=${config.nbsPath}`],
-    });
-    const { code, stderr, stdout } = command.outputSync();
-    console.log(new TextDecoder().decode(stdout));
-    console.error(new TextDecoder().decode(stderr));
-    console.log(">>> Code", code);
+  const results = await Promise.all(
+    config.notebooks.map((nb: string) => {
+      const command = new Deno.Command(".jurassic/runnb.py", {
+        args: [
+          path.resolve(config.nbsPath, nb),
+          `--nbs_path=${config.nbsPath}`,
+        ],
+        stdin: "piped",
+        stdout: "piped",
+      });
+      const child = command.spawn();
+
+      // open a file and pipe the subprocess output to it.
+      // child.stdout.pipeTo(
+      //   Deno.openSync("output", { write: true, create: true }).writable,
+      // );
+
+      // manually close stdin
+      child.stdin.close();
+      return child.status;
+    }),
+  );
+
+  if (results.filter((r) => r.code !== 0).length > 0) {
+    throw new Error("Failed to run one or more notebooks");
   }
 }
