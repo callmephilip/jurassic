@@ -4,6 +4,11 @@ import { cleanNb } from "jurassic/notebooks.ts";
 
 if (import.meta.main) {
   const config = await getConfig();
+
+  for (const nb of config.notebooks) {
+    await cleanNb(path.resolve(config.nbsPath, nb));
+  }
+
   const command = new Deno.Command(".jurassic/clean.py", {
     args: [config.nbsPath],
   });
@@ -13,10 +18,5 @@ if (import.meta.main) {
   console.log(">>> Code", code);
   if (code !== 0) {
     throw new Error("Failed to clean notebooks");
-  }
-
-  // additional clean up
-  for (const nb of config.notebooks) {
-    await cleanNb(path.resolve(config.nbsPath, nb));
   }
 }
