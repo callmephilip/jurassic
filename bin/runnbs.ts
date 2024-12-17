@@ -1,3 +1,5 @@
+import "@std/dotenv/load";
+
 import { getConfig } from "jurassic/config.ts";
 import path from "node:path";
 
@@ -26,13 +28,6 @@ if (import.meta.main) {
         stdout: "piped",
       });
       const child = command.spawn();
-
-      // open a file and pipe the subprocess output to it.
-      // child.stdout.pipeTo(
-      //   Deno.openSync("output", { write: true, create: true }).writable,
-      // );
-
-      // manually close stdin
       child.stdin.close();
       return child.status;
     }),

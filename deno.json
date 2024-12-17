@@ -1,6 +1,6 @@
 {
   "name": "@jurassic/jurassic",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "license": "MIT",
   "tasks": {
     "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
@@ -21,6 +21,7 @@
     "exclude": ["nbs/", "docs/"]
   },
   "imports": {
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
     "@std/fs": "jsr:@std/fs@^1.0.6",
     "typescript": "npm:typescript@^5.7.2",
     "zod": "npm:zod@^3.23.8",
