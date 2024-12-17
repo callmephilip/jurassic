@@ -4,4 +4,6 @@ outline: deep
 
 # Get started
 
-It's easy if you try
+```bash
+deno run --reload -R -W -N --allow-run jsr:@jurassic/jurassic/init yourproject
+```
