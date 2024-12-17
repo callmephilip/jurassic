@@ -17,7 +17,7 @@
     "./runnbs": "./bin/runnbs.ts"
   },
   "publish": {
-    "exclude": ["nbs/"]
+    "exclude": ["nbs/", "docs/"]
   },
   "imports": {
     "@std/fs": "jsr:@std/fs@^1.0.6",
