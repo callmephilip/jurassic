@@ -5,7 +5,7 @@ if (import.meta.main) {
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run --reload -R -W -N jsr:@jurassic/jurassic/init project-name",
+      "Usage: deno run --reload -R -W -N --allow-run jsr:@jurassic/jurassic/init project-name",
     );
     Deno.exit(1);
   }
@@ -23,6 +23,8 @@ if (import.meta.main) {
       throw err;
     }
   }
+
+  // Directories + files
 
   Deno.mkdirSync(projectPath);
   Deno.writeTextFileSync(
@@ -194,8 +196,28 @@ It's easy if you try
     new Uint8Array(await logo.arrayBuffer()),
   );
 
-  // console.log(import.meta.resolve("../project-template"));
-  // copySync(new URL("../project-template", import.meta.url), projectPath, {
-  //   overwrite: false,
+  // Switch to project directory
+  Deno.chdir(projectPath);
+
+  // Run build
+  const { code, stderr } = await new Deno.Command(Deno.execPath(), {
+    args: ["task", "build"],
+  }).output();
+
+  if (code !== 0) {
+    console.error(new TextDecoder().decode(stderr));
+    Deno.exit(1);
+  }
+
+  // Install dependencies
+  // const command = new Deno.Command(Deno.execPath(), {
+  //   args: ["add", "-D", "jsr:@jurassic/jurassic"],
   // });
+
+  // const { code, stderr } = await command.output();
+
+  // if (code !== 0) {
+  //   console.error(new TextDecoder().decode(stderr));
+  //   Deno.exit(1);
+  // }
 }

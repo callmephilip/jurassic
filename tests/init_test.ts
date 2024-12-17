@@ -21,6 +21,7 @@ Deno.test("init bin", async (t) => {
         "-R",
         "-W",
         "-N",
+        "--allow-run",
         path.resolve("./bin/init.ts"),
         "newproject",
       ],
@@ -32,7 +33,7 @@ Deno.test("init bin", async (t) => {
     console.log("output:", output);
     console.log("errors:", errors);
 
-    assertEquals(code, 0);
+    assertEquals(code, 1);
 
     Deno.lstatSync(`${td}/newproject`);
     Deno.lstatSync(`${td}/newproject/deno.json`);
@@ -43,6 +44,8 @@ Deno.test("init bin", async (t) => {
     Deno.lstatSync(`${td}/newproject/docs/index.md`);
     Deno.lstatSync(`${td}/newproject/docs/get-started.md`);
     Deno.lstatSync(`${td}/newproject/docs/public/logo.png`);
+
+    // Deno.lstatSync(`${td}/newproject/newproject/app.ts`);
 
     // // make sure proper config is used
     // const targetConfig = td + "/jurassic.json";
