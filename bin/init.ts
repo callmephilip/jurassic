@@ -11,7 +11,6 @@ if (import.meta.main) {
   }
 
   const projectName = args[0].replace(/\W/g, "").toLowerCase();
-  console.log("Gonna create a new project", Deno.cwd(), projectName);
   const projectPath = path.resolve(Deno.cwd(), projectName);
 
   try {
@@ -44,6 +43,9 @@ if (import.meta.main) {
       },
       exports: {
         ".": "./mod.ts",
+      },
+      imports: {
+        [`${projectName}/`]: `./${projectName}/`,
       },
       publish: {
         exclude: ["nbs/", "docs/"],
@@ -135,6 +137,16 @@ if (import.meta.main) {
     `${projectPath}/mod.ts`,
     `export * from "./${projectName}/app.ts";`,
   );
+  Deno.writeTextFileSync(
+    `${projectPath}/app.test.ts`,
+    `import { assert } from "jsr:@std/assert";
+import { app } from "${projectName}/app.ts";
+
+Deno.test("app", () => {
+  assert(app);
+});
+`,
+  );
   Deno.mkdirSync(`${projectPath}/docs`);
   Deno.writeTextFileSync(
     `${projectPath}/docs/package.json`,
@@ -196,28 +208,44 @@ It's easy if you try
     new Uint8Array(await logo.arrayBuffer()),
   );
 
+  Deno.mkdirSync(`${projectPath}/.jurassic`);
+
+  await Promise.all(
+    ["clean.py", "install.py", "runnb.py"].map(async (script) => {
+      Deno.writeTextFileSync(
+        `${projectPath}/.jurassic/${script}`,
+        await (
+          await fetch(
+            `https://raw.githubusercontent.com/callmephilip/jurassic/refs/heads/main/.jurassic/${script}`,
+          )
+        ).text(),
+      );
+      Deno.chmodSync(`${projectPath}/.jurassic/${script}`, 0o755);
+    }),
+  );
+
   // Switch to project directory
   Deno.chdir(projectPath);
 
   // Run build
+  const { code: buildCode, stderr: buildError } = await new Deno.Command(
+    Deno.execPath(),
+    {
+      args: ["task", "build"],
+    },
+  ).output();
+
+  if (buildCode !== 0) {
+    console.error(new TextDecoder().decode(buildError));
+    Deno.exit(1);
+  }
+
   const { code, stderr } = await new Deno.Command(Deno.execPath(), {
-    args: ["task", "build"],
+    args: ["task", "docs"],
   }).output();
 
   if (code !== 0) {
     console.error(new TextDecoder().decode(stderr));
     Deno.exit(1);
   }
-
-  // Install dependencies
-  // const command = new Deno.Command(Deno.execPath(), {
-  //   args: ["add", "-D", "jsr:@jurassic/jurassic"],
-  // });
-
-  // const { code, stderr } = await command.output();
-
-  // if (code !== 0) {
-  //   console.error(new TextDecoder().decode(stderr));
-  //   Deno.exit(1);
-  // }
 }
