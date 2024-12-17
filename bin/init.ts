@@ -4,16 +4,17 @@ import nb from "../project-template/app.json" with { "type": "json" };
 
 import { fetch as fileFetch } from "https://deno.land/x/file_fetch@0.2.0/mod.ts";
 
+const loadProjectTemplateFile = async (p: string): Promise<string> => {
+  const r = await fileFetch(
+    new URL(`../project-template/${p}`, import.meta.url),
+  );
 
-const loadProjectTemplateFile = async (p: string) : Promise<string> => {
-  const r = await fileFetch(new URL(`../project-template/${p}`, import.meta.url));
-  
   if (!r.ok) {
     throw new Error(`Failed to fetch ${p}`);
   }
-   
+
   return r.text();
-}
+};
 
 if (import.meta.main) {
   const args = Deno.args;
@@ -57,12 +58,12 @@ if (import.meta.main) {
 
   // change cwd to projectPath
   Deno.chdir(projectPath);
-  
+
   // set up dir for nbs
   Deno.mkdirSync("nbs");
   Deno.writeTextFileSync(
     path.resolve("nbs", "app.ipynb"),
-    JSON.stringify(nb)
+    JSON.stringify(nb),
   );
 
   // set up dir for docs
@@ -71,5 +72,5 @@ if (import.meta.main) {
   Deno.writeTextFileSync(
     "docs/index.md",
     await loadProjectTemplateFile("docs/index.md"),
-  )
+  );
 }
