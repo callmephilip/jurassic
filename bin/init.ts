@@ -1,5 +1,4 @@
 import path from "node:path";
-import { copySync } from "@std/fs";
 
 if (import.meta.main) {
   const args = Deno.args;
@@ -25,9 +24,114 @@ if (import.meta.main) {
     }
   }
 
-  console.log(import.meta.resolve("../project-template"));
+  Deno.mkdirSync(projectPath);
+  Deno.writeTextFileSync(
+    `${projectPath}/deno.json`,
+    JSON.stringify({
+      version: "0.1.0",
+      license: "MIT",
+      tasks: {
+        build:
+          "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
+        clean:
+          "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
+        docs:
+          "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
+        runnbs:
+          "deno run --allow-read --allow-env --allow-run jsr:@jurassic/jurassic/runnbs",
+      },
+      exports: {
+        ".": "./mod.ts",
+      },
+      publish: {
+        exclude: ["nbs/", "docs/"],
+      },
+      lint: {
+        exclude: ["_docs", "docs"],
+      },
+    }),
+  );
+  Deno.mkdirSync(`${projectPath}/nbs`);
+  Deno.writeTextFileSync(
+    `${projectPath}/nbs/app.ipynb`,
+    JSON.stringify({
+      cells: [
+        {
+          cell_type: "markdown",
+          metadata: {},
+          source: ["# This is your app\n", "\n", "Let's get cranking"],
+        },
+        {
+          cell_type: "code",
+          execution_count: null,
+          metadata: {},
+          outputs: [],
+          source: [
+            "//| export\n",
+            "\n",
+            "export const app = () => {\n",
+            '  console.log("Hello, World!");\n',
+            "};",
+          ],
+        },
+      ],
+      metadata: {
+        kernelspec: {
+          display_name: "Deno",
+          language: "typescript",
+          name: "deno",
+        },
+        language_info: {
+          name: "typescript",
+        },
+      },
+      nbformat: 4,
+      nbformat_minor: 2,
+    }),
+  );
+  // write jurassic.json
+  Deno.writeTextFileSync(
+    `${projectPath}/jurassic.json`,
+    JSON.stringify({
+      nbsPath: "nbs",
+      outputPath: projectName,
+      docsInputPath: "docs",
+      docsOutputPath: "_docs",
+      vitepress: {
+        title: projectName,
+        description: `${projectName} docs`,
+        base: "/jurassic/",
+        cleanUrls: true,
+        themeConfig: {
+          search: {
+            provider: "local",
+          },
+          logo: "/logo.png",
+          nav: [],
+          sidebar: [
+            {
+              text: "Guides",
+              items: [
+                {
+                  text: "Get started",
+                  link: "/get-started",
+                },
+              ],
+            },
+          ],
+          socialLinks: [
+            {
+              icon: "github",
+              link: "https://github.com/callmephilip/jurassic",
+            },
+          ],
+        },
+      },
+    }),
+  );
 
-  copySync(new URL("../project-template", import.meta.url), projectPath, {
-    overwrite: false,
-  });
+  // console.log(import.meta.resolve("../project-template"));
+  // copySync(new URL("../project-template", import.meta.url), projectPath, {
+  //   overwrite: false,
+  // });
 }
