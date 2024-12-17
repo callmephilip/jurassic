@@ -38,6 +38,11 @@ Deno.test("init bin", async (t) => {
     Deno.lstatSync(`${td}/newproject/deno.json`);
     Deno.lstatSync(`${td}/newproject/nbs/app.ipynb`);
     Deno.lstatSync(`${td}/newproject/jurassic.json`);
+    Deno.lstatSync(`${td}/newproject/mod.ts`);
+    Deno.lstatSync(`${td}/newproject/docs/package.json`);
+    Deno.lstatSync(`${td}/newproject/docs/index.md`);
+    Deno.lstatSync(`${td}/newproject/docs/get-started.md`);
+    Deno.lstatSync(`${td}/newproject/docs/public/logo.png`);
 
     // // make sure proper config is used
     // const targetConfig = td + "/jurassic.json";

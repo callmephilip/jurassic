@@ -129,6 +129,70 @@ if (import.meta.main) {
       },
     }),
   );
+  Deno.writeTextFileSync(
+    `${projectPath}/mod.ts`,
+    `export * from "./${projectName}/app.ts";`,
+  );
+  Deno.mkdirSync(`${projectPath}/docs`);
+  Deno.writeTextFileSync(
+    `${projectPath}/docs/package.json`,
+    JSON.stringify({
+      name: "docs",
+      version: "1.0.0",
+      description: "",
+      main: "index.js",
+      scripts: {
+        "docs:dev": "vitepress dev --open",
+        "docs:build": "vitepress build",
+        "docs:preview": "vitepress preview",
+      },
+      keywords: [],
+      author: "",
+      license: "ISC",
+      devDependencies: {
+        vitepress: "^1.5.0",
+      },
+    }),
+  );
+  Deno.writeTextFileSync(
+    `${projectPath}/docs/index.md`,
+    `---
+# https://vitepress.dev/reference/default-theme-home-page
+layout: home
+
+hero:
+  name: "Jurassic"
+  text: "Deno apps in Jupyter Notebooks"
+  tagline: It's like nbdev for Deno
+  actions:
+    - theme: brand
+      text: Get started
+      link: /get-started
+  image:
+    src: /jurassic.png
+    alt: Jurassic
+---
+`,
+  );
+  Deno.writeTextFileSync(
+    `${projectPath}/docs/get-started.md`,
+    `---
+outline: deep
+---
+
+# Get started
+
+It's easy if you try
+`,
+  );
+  Deno.mkdirSync(`${projectPath}/docs/public`);
+  const logo = await fetch(
+    "https://place-hold.it/1024x1024.png?text=you%20need%20a%20logo",
+  );
+  Deno.writeFileSync(
+    `${projectPath}/docs/public/logo.png`,
+    new Uint8Array(await logo.arrayBuffer()),
+  );
 
   // console.log(import.meta.resolve("../project-template"));
   // copySync(new URL("../project-template", import.meta.url), projectPath, {
