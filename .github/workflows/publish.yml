@@ -34,11 +34,14 @@ jobs:
       - name: Run export
         run: deno task build
 
-      - name: Check on git
-        run: git diff
-
-      - name: Tests
-        run: deno test --allow-all
-
+      - name: Check if tree is clean
+        run: |
+          set -ux
+          if [[ `git status --porcelain -uno` ]]; then
+            echo "Code is not in sync.  Please run deno task build locally and then push again"
+            git status -uno
+            git diff
+            exit 1;
+          fi
       - name: Publish package
         run: npx jsr publish
