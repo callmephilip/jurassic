@@ -6,7 +6,7 @@ if (import.meta.main) {
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run --reload -R -W -N jsr:@jurassic/jurassic/init project-name",
+      "Usage: deno run --reload -R -W -N jsr:@jurassic/jurassic/init project-name"
     );
     Deno.exit(1);
   }
@@ -24,6 +24,8 @@ if (import.meta.main) {
       throw err;
     }
   }
+
+  console.log(import.meta.resolve("../project-template"));
 
   copySync(new URL("../project-template", import.meta.url), projectPath, {
     overwrite: false,
