@@ -161,7 +161,7 @@ jobs:
       - name: Check if tree is clean
         run: |
           set -ux
-          if [[ "git status --porcelain -uno" ]]; then
+          if [[ \`git status --porcelain -uno\` ]]; then
             echo "Code is not in sync.  Please run deno task build locally and then push again"
             git status -uno
             git diff
