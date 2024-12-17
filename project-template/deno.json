@@ -1,30 +1,17 @@
 {
-  "name": "@jurassic/jurassic",
-  "version": "0.1.18",
+  "version": "0.1.0",
   "license": "MIT",
   "tasks": {
     "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
     "clean": "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
     "docs": "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
-    "docs:dev": "deno run -A --reload ./bin/docs.ts . && deno lint && deno fmt && cd _docs && pnpm install && pnpm run docs:dev",
     "runnbs": "deno run --allow-read --allow-env --allow-run jsr:@jurassic/jurassic/runnbs"
   },
   "exports": {
-    ".": "./mod.ts",
-    "./clean": "./bin/clean.ts",
-    "./docs": "./bin/docs.ts",
-    "./export": "./bin/export.ts",
-    "./init": "./bin/init.ts",
-    "./runnbs": "./bin/runnbs.ts"
+    ".": "./mod.ts"
   },
   "publish": {
     "exclude": ["nbs/", "docs/"]
-  },
-  "imports": {
-    "@std/fs": "jsr:@std/fs@^1.0.6",
-    "typescript": "npm:typescript@^5.7.2",
-    "zod": "npm:zod@^3.23.8",
-    "jurassic/": "./jurassic/"
   },
   "lint": {
     "exclude": ["_docs", "docs"]
