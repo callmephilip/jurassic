@@ -1,12 +1,12 @@
 import path from "node:path";
-import denoJson from "../project-template/deno.json" with { "type": "json"};
+import denoJson from "../project-template/deno.json" with { "type": "json" };
 
 if (import.meta.main) {
   const args = Deno.args;
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run -R -W jsr:@jurassic/jurassic/init project-name"
+      "Usage: deno run -R -W jsr:@jurassic/jurassic/init project-name",
     );
     Deno.exit(1);
   }
@@ -30,6 +30,6 @@ if (import.meta.main) {
 
   await Deno.writeFileSync(
     path.resolve(projectPath, "deno.json"),
-    new TextEncoder().encode(JSON.stringify(denoJson))
+    new TextEncoder().encode(JSON.stringify(denoJson)),
   );
 }
