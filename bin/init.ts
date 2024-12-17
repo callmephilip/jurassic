@@ -10,6 +10,17 @@ if (import.meta.main) {
     Deno.exit(1);
   }
 
+  const { code: jupyterCheck } = await new Deno.Command(Deno.execPath(), {
+    args: ["jupyter"],
+  }).output();
+
+  if (jupyterCheck !== 0) {
+    console.error(
+      `Make sure you have deno kernel installed: https://docs.deno.com/runtime/reference/cli/jupyter/`,
+    );
+    Deno.exit(1);
+  }
+
   const projectName = args[0].replace(/\W/g, "").toLowerCase();
   const projectPath = path.resolve(Deno.cwd(), projectName);
 
