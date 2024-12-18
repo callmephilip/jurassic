@@ -5,7 +5,7 @@ if (import.meta.main) {
 
   if (args.length !== 1) {
     console.error(
-      "Usage: deno run --reload -R -W -N --allow-run jsr:@jurassic/jurassic/init project-name"
+      "Usage: deno run --reload -R -W -N --allow-run jsr:@jurassic/jurassic/init project-name",
     );
     Deno.exit(1);
   }
@@ -16,7 +16,7 @@ if (import.meta.main) {
 
   if (jupyterCheck !== 0) {
     console.error(
-      `Make sure you have deno kernel installed: https://docs.deno.com/runtime/reference/cli/jupyter/`
+      `Make sure you have deno kernel installed: https://docs.deno.com/runtime/reference/cli/jupyter/`,
     );
     Deno.exit(1);
   }
@@ -46,7 +46,7 @@ if (import.meta.main) {
     `${projectPath}/.gitignore`,
     `_docs
 .jurassic/env
-.ipynb_checkpoints`
+.ipynb_checkpoints`,
   );
 
   Deno.mkdirSync(`${projectPath}/.github/workflows`, {
@@ -119,7 +119,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-`
+`,
   );
   Deno.writeTextFileSync(
     `${projectPath}/.github/workflows/publish.yml`,
@@ -168,7 +168,7 @@ jobs:
             git diff
             exit 1;
           fi
-`
+`,
   );
 
   Deno.writeTextFileSync(
@@ -181,7 +181,8 @@ jobs:
           "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
         clean:
           "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
-        docs: "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
+        docs:
+          "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
         runnbs:
           "deno run --allow-read --allow-env --allow-run jsr:@jurassic/jurassic/runnbs",
       },
@@ -197,7 +198,7 @@ jobs:
       lint: {
         exclude: ["_docs", "docs"],
       },
-    })
+    }),
   );
   Deno.mkdirSync(`${projectPath}/nbs`);
   Deno.writeTextFileSync(
@@ -235,7 +236,7 @@ jobs:
       },
       nbformat: 4,
       nbformat_minor: 2,
-    })
+    }),
   );
   // write jurassic.json
   Deno.writeTextFileSync(
@@ -275,11 +276,11 @@ jobs:
           ],
         },
       },
-    })
+    }),
   );
   Deno.writeTextFileSync(
     `${projectPath}/mod.ts`,
-    `export * from "./${projectName}/app.ts";`
+    `export * from "./${projectName}/app.ts";`,
   );
   Deno.writeTextFileSync(
     `${projectPath}/app.test.ts`,
@@ -289,7 +290,7 @@ import { app } from "${projectName}/app.ts";
 Deno.test("app", () => {
   assert(app);
 });
-`
+`,
   );
   Deno.mkdirSync(`${projectPath}/docs`);
   Deno.writeTextFileSync(
@@ -310,7 +311,7 @@ Deno.test("app", () => {
       devDependencies: {
         vitepress: "^1.5.0",
       },
-    })
+    }),
   );
   Deno.writeTextFileSync(
     `${projectPath}/docs/index.md`,
@@ -330,7 +331,7 @@ hero:
     src: /jurassic.png
     alt: Jurassic
 ---
-`
+`,
   );
   Deno.writeTextFileSync(
     `${projectPath}/docs/get-started.md`,
@@ -341,15 +342,15 @@ outline: deep
 # Get started
 
 It's easy if you try
-`
+`,
   );
   Deno.mkdirSync(`${projectPath}/docs/public`);
   const logo = await fetch(
-    "https://place-hold.it/1024x1024.png?text=you%20need%20a%20logo"
+    "https://place-hold.it/1024x1024.png?text=you%20need%20a%20logo",
   );
   Deno.writeFileSync(
     `${projectPath}/docs/public/logo.png`,
-    new Uint8Array(await logo.arrayBuffer())
+    new Uint8Array(await logo.arrayBuffer()),
   );
 
   Deno.mkdirSync(`${projectPath}/.jurassic`);
@@ -360,12 +361,12 @@ It's easy if you try
         `${projectPath}/.jurassic/${script}`,
         await (
           await fetch(
-            `https://raw.githubusercontent.com/callmephilip/jurassic/refs/heads/main/.jurassic/${script}`
+            `https://raw.githubusercontent.com/callmephilip/jurassic/refs/heads/main/.jurassic/${script}`,
           )
-        ).text()
+        ).text(),
       );
       Deno.chmodSync(`${projectPath}/.jurassic/${script}`, 0o755);
-    })
+    }),
   );
 
   // Switch to project directory
@@ -376,7 +377,7 @@ It's easy if you try
     Deno.execPath(),
     {
       args: ["task", "build"],
-    }
+    },
   ).output();
 
   if (buildCode !== 0) {
