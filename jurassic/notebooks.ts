@@ -49,7 +49,6 @@ export const saveNb = async (nb: Nb): Promise<void> => {
   const { filename, ...content } = nb;
   await Deno.writeTextFile(filename, JSON.stringify(content, null, 2));
 };
-
 export const getNbTitle = (nb: Nb): string => {
   const mds = nb.cells.length > 0 && nb.cells[0].cell_type === "markdown"
     ? nb.cells[0].source
