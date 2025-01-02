@@ -3,14 +3,11 @@
 import path from "node:path";
 import { z } from "zod";
 import { findDenoTests } from "jurassic/utils.ts";
-const cellOutputDataSchema = z.object({
-  "text/markdown": z.array(z.string()).optional(),
-  "text/plain": z.array(z.string()).optional(),
-});
-
 const cellOutputSchema = z.object({
-  text: z.array(z.string()).optional(),
-  data: cellOutputDataSchema.optional(),
+  data: z.record(z.any()).optional(),
+  execution_count: z.number().nullable().optional(),
+  text: z.union([z.string(), z.array(z.string())]).optional(),
+  metadata: z.record(z.any()).optional(),
 });
 
 export const isDirective = (ln: string): boolean =>
@@ -21,6 +18,7 @@ const cellSchema = z
     cell_type: z.enum(["code", "markdown"]),
     source: z.array(z.string()),
     outputs: z.array(cellOutputSchema).optional(),
+    metadata: z.record(z.any()).optional(),
   })
   .transform((data) => {
     return Object.assign(data, {
@@ -30,7 +28,11 @@ const cellSchema = z
         isDirective(data.source[0]) && data.source[0].includes("export"),
     });
   });
-const nbSchema = z.object({ filename: z.string(), cells: z.array(cellSchema) });
+const nbSchema = z.object({
+  filename: z.string(),
+  metadata: z.record(z.any()).optional(),
+  cells: z.array(cellSchema),
+});
 
 export type Cell = z.infer<typeof cellSchema>;
 export type Nb = z.infer<typeof nbSchema>;
@@ -42,6 +44,12 @@ export const loadNb = async (nbPath: string): Promise<Nb> =>
       JSON.parse(await Deno.readTextFile(nbPath)),
     ),
   );
+
+export const saveNb = async (nb: Nb): Promise<void> => {
+  const { filename, ...content } = nb;
+  await Deno.writeTextFile(filename, JSON.stringify(content, null, 2));
+};
+
 export const getNbTitle = (nb: Nb): string => {
   const mds = nb.cells.length > 0 && nb.cells[0].cell_type === "markdown"
     ? nb.cells[0].source
@@ -58,7 +66,9 @@ export const getCellOutput = (cell: Cell): string => {
   if (!cell.outputs) return result;
   for (const output of cell.outputs) {
     if (output.text) {
-      result += output.text.join("\n");
+      result += Array.isArray(output.text)
+        ? output.text.join("\n")
+        : output.text;
     }
     if (output.data) {
       const c = output.data["text/markdown"] || output.data["text/plain"] || [];
