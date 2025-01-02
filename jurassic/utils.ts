@@ -2,6 +2,10 @@
 
 import path from "node:path";
 import * as ts from "typescript";
+import { loadSync } from "@std/dotenv";
+export const md = async (content: string) => {
+  await Deno.jupyter.display({ "text/markdown": content }, { raw: true });
+};
 export const getProjectRoot = (
   dir: string = Deno.cwd(),
   d = 0,
@@ -16,6 +20,9 @@ export const getProjectRoot = (
   } catch {
     return getProjectRoot(path.join(dir, "../"), d + 1);
   }
+};
+export const loadEnv = () => {
+  loadSync({ envPath: getProjectRoot() + "/.env", export: true });
 };
 // create markdown representation of the directory listing files and subdirectories
 export const dirListing = (dir: string, d = 0): string => {
