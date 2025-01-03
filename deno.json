@@ -22,6 +22,7 @@
   },
   "imports": {
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.33.1",
+    "@std/async": "jsr:@std/async@^1.0.9",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
     "@std/fs": "jsr:@std/fs@^1.0.6",
     "typescript": "npm:typescript@^5.7.2",
