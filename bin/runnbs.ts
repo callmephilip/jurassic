@@ -3,26 +3,16 @@ import "@std/dotenv/load";
 import { getConfig } from "jurassic/config.ts";
 import path from "node:path";
 
-const envPath = ".jurassic/env";
-
 if (import.meta.main) {
   const config = await getConfig();
-  const command = new Deno.Command("python", {
-    args: [".jurassic/install.py", `--env_path=${envPath}`],
-  });
-  const { code, stderr } = command.outputSync();
-
-  if (code !== 0) {
-    console.assert("world\n" === new TextDecoder().decode(stderr));
-    throw new Error("Failed to run notebooks");
-  }
-
   const results = await Promise.all(
     config.notebooks.map((nb: string) => {
-      const command = new Deno.Command(".jurassic/runnb.py", {
+      console.log(`Running ${nb}`);
+      const command = new Deno.Command("jupyter", {
         args: [
+          "execute",
+          "--kernel_name=deno",
           path.resolve(config.nbsPath, nb),
-          `--nbs_path=${config.nbsPath}`,
         ],
         stdin: "piped",
         stdout: "piped",

@@ -5,9 +5,9 @@ import { z } from "zod";
 import { findDenoTests } from "jurassic/utils.ts";
 const cellOutputSchema = z.object({
   data: z.record(z.any()).optional(),
-  execution_count: z.number().nullable().optional(),
   text: z.union([z.string(), z.array(z.string())]).optional(),
   metadata: z.record(z.any()).optional(),
+  output_type: z.string().optional(),
 });
 
 export const isDirective = (ln: string): boolean =>
@@ -19,6 +19,7 @@ const rawCellSchema = z
     source: z.array(z.string()),
     outputs: z.array(cellOutputSchema).optional(),
     metadata: z.record(z.any()).optional(),
+    execution_count: z.number().nullable().optional(),
   });
 
 const cellSchema = rawCellSchema.transform((data) => {
