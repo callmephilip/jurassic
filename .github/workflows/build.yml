@@ -1,0 +1,36 @@
+name: build
+
+jobs:
+  nbdev-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install jupyter notebook
+        run: |
+          pip install notebook
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install jupyter deno kernel
+        run: deno jupyter --unstable --install
+
+      - name: Run export
+        run: deno task build
+
+      - name: Check if tree is clean
+        run: |
+          set -ux
+          if [[ `git status --porcelain -uno` ]]; then
+            echo "Code is not in sync.  Please run deno task build locally and then push again"
+            git status -uno
+            git diff
+            exit 1;
+          fi
