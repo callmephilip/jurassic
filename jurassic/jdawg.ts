@@ -100,6 +100,8 @@ Your job is to assist with:
 
 Your knowledge is current as of December 2024.
 
+- for assertions use "jsr:@std/assert";
+
 Respond with code snippets or markdown when needed. Only return the exact content requested. Do not add any explanations, prefacing text, or other content.
 `;
 

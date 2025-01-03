@@ -356,7 +356,7 @@ It's easy if you try
   Deno.mkdirSync(`${projectPath}/.jurassic`);
 
   await Promise.all(
-    ["clean.py", "install.py", "runnb.py"].map(async (script) => {
+    ["install.py", "runnb.py"].map(async (script) => {
       Deno.writeTextFileSync(
         `${projectPath}/.jurassic/${script}`,
         await (
