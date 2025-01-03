@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Publish package
         run: npx jsr publish
-    docs:
-      needs: publish
-      uses: callmephilip/jurassic/.github/workflows/docs.yml@main
+  docs:
+    needs: publish
+    uses: callmephilip/jurassic/.github/workflows/docs.yml@main
