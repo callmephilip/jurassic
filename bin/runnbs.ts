@@ -1,5 +1,5 @@
 import "@std/dotenv/load";
-import { retry } from "jsr:@std/async";
+import { retry } from "@std/async";
 import { getConfig } from "jurassic/config.ts";
 import path from "node:path";
 
