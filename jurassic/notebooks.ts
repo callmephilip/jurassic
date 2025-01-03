@@ -14,14 +14,15 @@ const cellOutputSchema = z.object({
 export const isDirective = (ln: string): boolean =>
   ln.replaceAll(" ", "").startsWith("//|");
 
-const cellSchema = z
+const rawCellSchema = z
   .object({
     cell_type: z.enum(["code", "markdown"]),
     source: z.array(z.string()),
     outputs: z.array(cellOutputSchema).optional(),
     metadata: z.record(z.any()).optional(),
-  })
-  .transform((data) => {
+  });
+
+const cellSchema = rawCellSchema.transform((data) => {
     return Object.assign(data, {
       isTestCell: data.cell_type === "code" &&
         findDenoTests(data.source.join("\n")).length > 0,
@@ -29,26 +30,31 @@ const cellSchema = z
         isDirective(data.source[0]) && data.source[0].includes("export"),
     });
   });
+
 const nbSchema = z.object({
   filename: z.string(),
   metadata: z.record(z.any()).optional(),
   cells: z.array(cellSchema),
+  rawCells: z.array(rawCellSchema),
 });
 
 export type Cell = z.infer<typeof cellSchema>;
+export type RawCell = z.infer<typeof rawCellSchema>;
 export type Nb = z.infer<typeof nbSchema>;
 
-export const loadNb = async (nbPath: string): Promise<Nb> =>
-  nbSchema.parse(
+export const loadNb = async (nbPath: string): Promise<Nb> => {
+  const d = JSON.parse(await Deno.readTextFile(nbPath));
+  return nbSchema.parse(
     Object.assign(
-      { filename: nbPath },
-      JSON.parse(await Deno.readTextFile(nbPath)),
+      { filename: nbPath, rawCells: d.cells },
+      d,
     ),
   );
+}
 
 export const saveNb = async (nb: Nb): Promise<void> => {
-  const { filename, ...content } = nb;
-  await Deno.writeTextFile(filename, JSON.stringify(content, null, 2));
+  const { filename, rawCells, metadata } = nb;
+  await Deno.writeTextFile(filename, JSON.stringify({ metadata, cells: rawCells }, null, 2));
 };
 export const getNbTitle = (nb: Nb): string => {
   const mds = nb.cells.length > 0 && nb.cells[0].cell_type === "markdown"
