@@ -1,18 +1,7 @@
-name: Publish docs
+name: Build and publish docs
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  workflow_call:
 
 jobs:
   build:
