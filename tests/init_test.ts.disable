@@ -38,8 +38,6 @@ Deno.test("init bin", async (t) => {
     Deno.lstatSync(`${td}/newproject/docs/index.md`);
     Deno.lstatSync(`${td}/newproject/docs/get-started.md`);
     Deno.lstatSync(`${td}/newproject/docs/public/logo.png`);
-    Deno.lstatSync(`${td}/newproject/.jurassic/install.py`);
-    Deno.lstatSync(`${td}/newproject/.jurassic/runnb.py`);
 
     Deno.lstatSync(`${td}/newproject/newproject/app.ts`);
     Deno.lstatSync(`${td}/newproject/_docs`);

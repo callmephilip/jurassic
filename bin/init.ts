@@ -38,14 +38,9 @@ if (import.meta.main) {
 
   Deno.mkdirSync(projectPath);
 
-  // Deno.lstatSync(`${td}/newproject/.github/workflows/docs.yml`);
-  // Deno.lstatSync(`${td}/newproject/.github/workflows/publish.yml`);
-  // Deno.lstatSync(`${td}/newproject/.gitignore`);
-
   Deno.writeTextFileSync(
     `${projectPath}/.gitignore`,
     `_docs
-.jurassic/env
 .ipynb_checkpoints`,
   );
 
@@ -351,22 +346,6 @@ It's easy if you try
   Deno.writeFileSync(
     `${projectPath}/docs/public/logo.png`,
     new Uint8Array(await logo.arrayBuffer()),
-  );
-
-  Deno.mkdirSync(`${projectPath}/.jurassic`);
-
-  await Promise.all(
-    ["install.py", "runnb.py"].map(async (script) => {
-      Deno.writeTextFileSync(
-        `${projectPath}/.jurassic/${script}`,
-        await (
-          await fetch(
-            `https://raw.githubusercontent.com/callmephilip/jurassic/refs/heads/main/.jurassic/${script}`,
-          )
-        ).text(),
-      );
-      Deno.chmodSync(`${projectPath}/.jurassic/${script}`, 0o755);
-    }),
   );
 
   // Switch to project directory

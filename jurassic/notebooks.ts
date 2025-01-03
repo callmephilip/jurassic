@@ -8,6 +8,8 @@ const cellOutputSchema = z.object({
   text: z.union([z.string(), z.array(z.string())]).optional(),
   metadata: z.record(z.any()).optional(),
   output_type: z.string().optional(),
+  name: z.string().optional(),
+  execution_count: z.number().nullable().optional(),
 });
 
 export const isDirective = (ln: string): boolean =>
