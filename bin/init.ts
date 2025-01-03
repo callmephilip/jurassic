@@ -48,13 +48,12 @@ if (import.meta.main) {
     recursive: true,
   });
   Deno.writeTextFileSync(
-    `${projectPath}/.github/workflows/docs.yml`,
-    `name: Publish docs
-
+    `${projectPath}/.github/workflows/publish.yml`,
+    `name: Publish
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -66,103 +65,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-      - name: Install jupyter notebook
-        run: |
-          pip install notebook
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Install jupyter deno kernel
-        run: deno jupyter --unstable --install
-      - name: Run export
-        run: deno task build
-      - name: Docs
-        run: deno task docs
-      - name: Install dependencies
-        working-directory: ./_docs
-        run: pnpm install
-      - name: Build with VitePress
-        working-directory: ./_docs
-        run: pnpm docs:build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _docs/.vitepress/dist
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  build:
+    uses: callmephilip/jurassic/.github/workflows/build.yml@main
+  docs:
+    uses: callmephilip/jurassic/.github/workflows/docs.yml@main
 `,
   );
   Deno.writeTextFileSync(
-    `${projectPath}/.github/workflows/publish.yml`,
-    `name: Publish
+    `${projectPath}/.github/workflows/pr.yml`,
+    `name: PRs
+
 on:
+  pull_request:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Install jupyter notebook
-        run: |
-          pip install notebook
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: Install jupyter deno kernel
-        run: deno jupyter --unstable --install
-
-      - name: Run export
-        run: deno task build
-
-      - name: Check if tree is clean
-        run: |
-          set -ux
-          if [[ \`git status --porcelain -uno\` ]]; then
-            echo "Code is not in sync.  Please run deno task build locally and then push again"
-            git status -uno
-            git diff
-            exit 1;
-          fi
+  build:
+    uses: callmephilip/jurassic/.github/workflows/build.yml@main
 `,
   );
 

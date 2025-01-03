@@ -26,8 +26,8 @@ Deno.test("init bin", async (t) => {
     assertEquals(code, 0);
 
     Deno.lstatSync(`${td}/newproject`);
-    Deno.lstatSync(`${td}/newproject/.github/workflows/docs.yml`);
     Deno.lstatSync(`${td}/newproject/.github/workflows/publish.yml`);
+    Deno.lstatSync(`${td}/newproject/.github/workflows/pr.yml`);
     Deno.lstatSync(`${td}/newproject/.gitignore`);
     Deno.lstatSync(`${td}/newproject/deno.json`);
     Deno.lstatSync(`${td}/newproject/nbs/app.ipynb`);
