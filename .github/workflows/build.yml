@@ -1,5 +1,8 @@
 name: build
 
+on:
+  workflow_call:
+
 jobs:
   nbdev-test:
     runs-on: ubuntu-latest
