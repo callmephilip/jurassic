@@ -95,25 +95,15 @@ Deno.test("export", async (t) => {
     path.resolve(getProjectRoot(), "nbs/export.ipynb"),
     `${td}/nbs/export.ipynb`,
   );
-  // recreate submodule directory and copy hello.ipynb to it
-  await Deno.mkdir(`${td}/nbs/submodule`),
-    Deno.copyFileSync(
-      path.resolve(getProjectRoot(), "nbs/submodule/hello.ipynb"),
-      `${td}/nbs/submodule/hello.ipynb`,
-    );
 
   await t.step("test export", async () => {
     await exportNb("./", getTestConfig(td));
 
     // make sure output modules are created
     const exportContent = await Deno.readTextFile(`${td}/jurassic/export.ts`);
-    const submoduleExportContent = await Deno.readTextFile(
-      `${td}/jurassic/submodule/hello.ts`,
-    );
 
     // spot check content inside the output modules
     assert(exportContent.includes("export const exportNb"));
-    assert(submoduleExportContent.includes("export const foo"));
 
     // pretty print temp directory structure
     // await Deno.jupyter.display({

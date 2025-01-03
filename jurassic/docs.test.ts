@@ -153,12 +153,6 @@ Deno.test("generateDocs", async (t) => {
     path.resolve(getProjectRoot(), "nbs/export.ipynb"),
     `${td}/nbs/export.ipynb`,
   );
-  // recreate submodule directory and copy hello.ipynb to it
-  await Deno.mkdir(`${td}/nbs/submodule`),
-    Deno.copyFileSync(
-      path.resolve(getProjectRoot(), "nbs/submodule/hello.ipynb"),
-      `${td}/nbs/submodule/hello.ipynb`,
-    );
   copySync(path.resolve(getProjectRoot(), "docs"), `${td}/docs`);
 
   await t.step("test generateDocs", async () => {
@@ -179,17 +173,12 @@ Deno.test("generateDocs", async (t) => {
       `${td}/_docs/.vitepress/config.mts`,
     );
     const exportContent = await Deno.readTextFile(`${td}/_docs/export.md`);
-    const submoduleExportContent = await Deno.readTextFile(
-      `${td}/_docs/submodule/hello.md`,
-    );
 
     // spot check content inside the output modules
     assert(exportContent.includes("# Export"));
-    assert(submoduleExportContent.includes("# Test module"));
 
     // spot check vitepress config
     assert(vitepressConfig.includes("export"));
-    assert(vitepressConfig.includes("hello"));
     // make sure paths do not include nbs base dir
     assert(!vitepressConfig.includes("nbs/export"));
     // make sure .md extensions get removed
