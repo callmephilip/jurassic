@@ -1,0 +1,10 @@
+name: PRs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    uses: callmephilip/jurassic/.github/workflows/build.yml@main
