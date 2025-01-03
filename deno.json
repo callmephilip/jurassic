@@ -1,13 +1,13 @@
 {
   "name": "@jurassic/jurassic",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "license": "MIT",
   "tasks": {
     "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
-    "clean": "deno run --allow-read --allow-env --allow-write --allow-run ./bin/clean.ts",
+    "clean": "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
     "docs": "deno run -A --reload jsr:@jurassic/jurassic/docs . && deno lint && deno fmt",
     "docs:dev": "deno run -A --reload ./bin/docs.ts . && deno lint && deno fmt && cd _docs && pnpm install && pnpm run docs:dev",
-    "runnbs": "deno run --allow-read --allow-env --allow-run ./bin/runnbs.ts"
+    "runnbs": "deno run --allow-read --allow-env --allow-run jsr:@jurassic/jurassic/runnbs"
   },
   "exports": {
     ".": "./mod.ts",
