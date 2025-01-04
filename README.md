@@ -1,6 +1,6 @@
 <div align="center">
 
-<img width=200 src="./docs/public/jurassic.jpeg">
+<img width=200 src="./docs/public/jurassic.png">
 
 # Jurassic
 
