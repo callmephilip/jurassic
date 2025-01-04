@@ -77,8 +77,6 @@ jobs:
 
 on:
   pull_request:
-  push:
-    branches: [main]
 
 jobs:
   build:
