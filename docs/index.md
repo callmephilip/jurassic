@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Jurassic"
   text: "Deno apps in Jupyter Notebooks"
-  tagline: It's like nbdev for Deno
+  tagline: Build and ship software in Jupyter notebooks using Deno
   actions:
     - theme: brand
       text: Get started

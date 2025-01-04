@@ -4,7 +4,7 @@ outline: deep
 
 # What is Jurassic?
 
-Jurassic lets you write and ship software in Jupyter notebooks using Deno. It's
+Jurassic lets you build and ship software in Jupyter notebooks using Deno. It's
 inspired by [nbdev](https://nbdev.fast.ai/) and is made possible by
 [Deno Jupyter kernel](https://docs.deno.com/runtime/reference/cli/jupyter/).
 
