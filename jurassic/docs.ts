@@ -8,7 +8,7 @@ import type { Cell, Nb } from "jurassic/notebooks.ts";
 import { copySync } from "@std/fs";
 const wrapCode = (code: string): string => "```typescript\n" + code + "\n```\n";
 
-export const processCell = (cell: Cell): string => {
+const processCell = (cell: Cell): string => {
   if (cell.cell_type === "markdown") {
     // markdown cells - just show content directly
     return cell.source.join("");
