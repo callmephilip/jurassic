@@ -91,7 +91,7 @@ jobs:
       license: "MIT",
       tasks: {
         build:
-          "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno lint && deno fmt && deno task clean && deno test --allow-all",
+          "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno check . && deno lint && deno fmt && deno task clean && deno test --allow-all",
         clean:
           "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
         docs:
@@ -108,9 +108,7 @@ jobs:
       publish: {
         exclude: ["nbs/", "docs/"],
       },
-      lint: {
-        exclude: ["_docs", "docs"],
-      },
+      exclude: ["_docs", "docs"],
     }),
   );
   Deno.mkdirSync(`${projectPath}/nbs`);

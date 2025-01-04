@@ -75,6 +75,7 @@ class Conversation {
         })),
       });
 
+      // @ts-ignore Property 'text' does not exist on type 'ContentBlock'.
       const assistantMessage = response.content[0].text;
 
       this.messages.push({
@@ -105,12 +106,12 @@ Your knowledge is current as of December 2024.
 Respond with code snippets or markdown when needed. Only return the exact content requested. Do not add any explanations, prefacing text, or other content.
 `;
 
-let __jdawg_conversation;
+let __jdawg_conversation: Conversation | undefined;
 
 export async function j(
   strings: TemplateStringsArray,
   ...expr: string[]
-): Promise<string> {
+): Promise<void> {
   if (!__jdawg_conversation) {
     throw new Error("JDawg is not initialized. Run `j.initialize()` first.");
   }
@@ -124,7 +125,7 @@ export async function j(
   return md(response);
 }
 
-j.initialize = (notebookPath: str): void => {
+j.initialize = (notebookPath: string): void => {
   loadEnv();
 
   if (!Deno.env.get("ANTHROPIC_API_KEY")) {
