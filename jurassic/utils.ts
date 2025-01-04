@@ -101,6 +101,31 @@ export function getExportedDefinitions(sourceCode: string): SymbolDefinition[] {
   const definitions: SymbolDefinition[] = [];
 
   function getNodeSignature(node: ts.Node): string {
+    // return sourceCode.slice(node.getStart(), node.getEnd()).trim();
+    if (ts.isFunctionDeclaration(node) && node.name) {
+      const params = node.parameters
+        .map((p) => `${p.name.getText()}: ${p.type?.getText() ?? "any"}`)
+        .join(", ");
+      const returnType = node.type?.getText() ?? "void";
+      return `function ${node.name.text}(${params}): ${returnType}`;
+    }
+
+    if (ts.isMethodDeclaration(node) && node.name) {
+      const params = node.parameters
+        .map((p) => `${p.name.getText()}: ${p.type?.getText() ?? "any"}`)
+        .join(", ");
+      const returnType = node.type?.getText() ?? "void";
+      return `${node.name.getText()}(${params}): ${returnType}`;
+    }
+
+    if (ts.isArrowFunction(node)) {
+      const params = node.parameters
+        .map((p) => `${p.name.getText()}: ${p.type?.getText() ?? "any"}`)
+        .join(", ");
+      const returnType = node.type?.getText() ?? "any";
+      return `(${params}) => ${returnType}`;
+    }
+
     return sourceCode.slice(node.getStart(), node.getEnd()).trim();
   }
 
