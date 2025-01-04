@@ -4,13 +4,13 @@ import { loadNb } from "jurassic/notebooks.ts";
 import { loadEnv, md } from "jurassic/utils.ts";
 import Anthropic from "@anthropic-ai/sdk";
 
-export interface Message {
+interface Message {
   role: "assistant" | "user";
   content: string;
   timestamp: Date;
 }
 
-export class Conversation {
+class Conversation {
   private messages: Message[] = [];
   private claude: Anthropic;
   private notebookPath: string;
@@ -107,7 +107,10 @@ Respond with code snippets or markdown when needed. Only return the exact conten
 
 let __jdawg_conversation;
 
-export async function j(strings: TemplateStringsArray, ...expr: string[]) {
+export async function j(
+  strings: TemplateStringsArray,
+  ...expr: string[]
+): Promise<string> {
   if (!__jdawg_conversation) {
     throw new Error("JDawg is not initialized. Run `j.initialize()` first.");
   }
@@ -121,7 +124,7 @@ export async function j(strings: TemplateStringsArray, ...expr: string[]) {
   return md(response);
 }
 
-j.initialize = (notebookPath: str) => {
+j.initialize = (notebookPath: str): void => {
   loadEnv();
 
   if (!Deno.env.get("ANTHROPIC_API_KEY")) {

@@ -1,1 +1,1 @@
-export * from "./jurassic/export.ts";
+export { j } from "./jurassic/jdawg.ts";
