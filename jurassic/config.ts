@@ -3,7 +3,7 @@
 import { z } from "zod";
 import path from "node:path";
 import { getNotebooksToProcess } from "jurassic/utils.ts";
-const configSchema: z.Schema = z.object({
+export const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
