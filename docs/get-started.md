@@ -100,7 +100,7 @@ Let's modify the app and rerun it:
 //| export
 
 export const app = () => {
-    console.log("Hello, World!");
+  console.log("Hello, World!");
 };
 ```
 
@@ -110,7 +110,7 @@ export const app = () => {
 //| export
 
 export const app = () => {
-    console.log("Hey!");
+  console.log("Hey!");
 };
 ```
 
