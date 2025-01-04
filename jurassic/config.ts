@@ -3,7 +3,7 @@
 import { z } from "zod";
 import path from "node:path";
 import { getNotebooksToProcess } from "jurassic/utils.ts";
-export const configSchema: z.Schema = z.object({
+const configSchema: z.Schema = z.object({
   configPath: z.string(),
   nbsPath: z.string().default("."),
   outputPath: z.string().default("."),
@@ -50,7 +50,7 @@ export const configSchema: z.Schema = z.object({
 });
 
 export type Config = z.infer<typeof configSchema>;
-const findConfig = async (
+export const findConfig = async (
   dir: string = Deno.cwd(),
   d = 0,
   config = "jurassic.json",
