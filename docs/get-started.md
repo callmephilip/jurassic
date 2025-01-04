@@ -135,4 +135,4 @@ inspiration:
   Jurassic
 - [bsky2md](https://github.com/callmephilip/bsky2md) is a Hono based web app
   integrating with Bluesky API, it converts Bluesky threads into markdown files;
-  you can see it action [here](https://bsky2md.deno.dev)
+  you can see it in action [here](https://bsky2md.deno.dev)
