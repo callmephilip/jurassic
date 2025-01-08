@@ -91,7 +91,7 @@ jobs:
       license: "MIT",
       tasks: {
         build:
-          "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno check . && deno lint && deno fmt && deno task clean && deno test --allow-all",
+          "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno check . && deno lint && deno fmt && deno task clean && deno test --allow-all --env-file",
         clean:
           "deno run --allow-read --allow-env --allow-write --allow-run jsr:@jurassic/jurassic/clean",
         docs:
