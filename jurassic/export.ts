@@ -40,9 +40,10 @@ const processNb = async (
 };
 
 export const exportNb = async (
-  notebookPath: string,
+  notebookPath?: string | undefined,
   config?: Config | undefined,
 ): Promise<void> => {
+  notebookPath = notebookPath || ".";
   config = config || await getConfig();
   const notebooksToProcess: string[] = getNotebooksToProcess(
     notebookPath,

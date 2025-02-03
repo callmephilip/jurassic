@@ -43,11 +43,14 @@ export const dirListing = (dir: string, d = 0): string => {
   }
   return md;
 };
+
 export const getNotebooksToProcess = (
   notebookPath: string,
   nbsPath: string,
 ): string[] => {
-  const fullPath = path.join(nbsPath, notebookPath);
+  const fullPath = path.isAbsolute(nbsPath)
+    ? path.join(nbsPath, notebookPath)
+    : path.join(getProjectRoot(), nbsPath, notebookPath);
   const fileInfo = Deno.statSync(fullPath);
   const notebooksToProcess: string[] = [];
 
