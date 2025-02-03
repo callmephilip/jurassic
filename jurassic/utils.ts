@@ -266,17 +266,14 @@ export const removeDuplicateImports = (sourceCode: string): string => {
     ts.ScriptTarget.Latest,
     true,
   );
-  const imports = new Map<
-    string,
-    {
-      specifiers: Set<string>;
-      defaultName?: string;
-      namespaceImport?: string;
-      typeOnlySpecifiers: Set<string>;
-      isBareImport?: boolean;
-    }
-  >();
   const importNodes: ts.ImportDeclaration[] = [];
+  const imports = new Map<string, {
+    specifiers: Map<string, string>; // name -> alias
+    defaultName?: string;
+    namespaceImport?: string;
+    typeOnlySpecifiers: Map<string, string>; // name -> alias
+    isBareImport?: boolean;
+  }>();
 
   function visit(node: ts.Node) {
     if (ts.isImportDeclaration(node)) {
@@ -285,47 +282,54 @@ export const removeDuplicateImports = (sourceCode: string): string => {
 
       if (!imports.has(source)) {
         imports.set(source, {
-          specifiers: new Set(),
-          typeOnlySpecifiers: new Set(),
+          specifiers: new Map(),
+          typeOnlySpecifiers: new Map(),
           isBareImport: !node.importClause,
         });
       }
 
-      // Handle bare imports
       if (!node.importClause) {
         imports.get(source)!.isBareImport = true;
         return;
       }
 
-      if (node.importClause) {
-        const isTypeOnly = node.importClause.isTypeOnly;
+      const isTypeOnly = node.importClause.isTypeOnly;
 
-        if (
-          node.importClause.namedBindings &&
-          ts.isNamespaceImport(node.importClause.namedBindings)
-        ) {
-          imports.get(source)!.namespaceImport =
-            node.importClause.namedBindings.name.text;
-        } else if (
-          node.importClause.namedBindings &&
-          ts.isNamedImports(node.importClause.namedBindings)
-        ) {
-          node.importClause.namedBindings.elements.forEach((element) => {
-            if (isTypeOnly || element.isTypeOnly) {
-              imports.get(source)?.typeOnlySpecifiers.add(element.name.text);
+      if (
+        node.importClause.namedBindings &&
+        ts.isNamespaceImport(node.importClause.namedBindings)
+      ) {
+        imports.get(source)!.namespaceImport =
+          node.importClause.namedBindings.name.text;
+      } else if (
+        node.importClause.namedBindings &&
+        ts.isNamedImports(node.importClause.namedBindings)
+      ) {
+        node.importClause.namedBindings.elements.forEach((element) => {
+          const name = element.propertyName?.text || element.name.text;
+          const alias = element.propertyName ? element.name.text : undefined;
+
+          if (isTypeOnly || element.isTypeOnly) {
+            if (alias) {
+              imports.get(source)?.typeOnlySpecifiers.set(name, alias);
             } else {
-              imports.get(source)?.specifiers.add(element.name.text);
+              imports.get(source)?.typeOnlySpecifiers.set(name, name);
             }
-          });
-        }
-        if (node.importClause.name) {
-          imports.get(source)!.defaultName = node.importClause.name.text;
-          if (isTypeOnly) {
-            imports.get(source)?.typeOnlySpecifiers.add("default");
           } else {
-            imports.get(source)?.specifiers.add("default");
+            if (alias) {
+              imports.get(source)?.specifiers.set(name, alias);
+            } else {
+              imports.get(source)?.specifiers.set(name, name);
+            }
           }
-        }
+        });
+      }
+      if (node.importClause.name) {
+        imports.get(source)!.defaultName = node.importClause.name.text;
+        const target = isTypeOnly
+          ? imports.get(source)?.typeOnlySpecifiers
+          : imports.get(source)?.specifiers;
+        target?.set("default", "default");
       }
     }
     ts.forEachChild(node, visit);
@@ -346,29 +350,32 @@ export const removeDuplicateImports = (sourceCode: string): string => {
       },
     ] of imports
   ) {
-    // Handle bare imports first
     if (isBareImport) {
       newImports.push(`import '${source}';`);
       continue;
     }
 
-    // Handle type-only imports
     if (typeOnlySpecifiers.size > 0) {
-      let importStr = "import type ";
-      const namedImports = Array.from(typeOnlySpecifiers).sort().join(", ");
-      importStr += `{ ${namedImports} }`;
-      importStr += ` from '${source}';`;
+      let importStr = "import type { ";
+      const namedImports = Array.from(typeOnlySpecifiers.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([name, alias]) => name === alias ? name : `${name} as ${alias}`)
+        .join(", ");
+      importStr += namedImports;
+      importStr += ` } from '${source}';`;
       newImports.push(importStr);
     }
 
-    // Handle regular imports
     if (specifiers.size > 0 || namespaceImport) {
       let importStr = "import ";
       if (namespaceImport) {
         importStr += `* as ${namespaceImport}`;
       } else {
         const hasDefault = specifiers.delete("default");
-        const namedImports = Array.from(specifiers).sort().join(", ");
+        const namedImports = Array.from(specifiers.entries())
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([name, alias]) => name === alias ? name : `${name} as ${alias}`)
+          .join(", ");
 
         if (hasDefault && defaultName) {
           importStr += `${defaultName} `;
