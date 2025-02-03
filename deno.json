@@ -22,11 +22,11 @@
   },
   "imports": {
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.33.1",
-    "@std/async": "jsr:@std/async@^1.0.9",
+    "@std/async": "jsr:@std/async@^1.0.10",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
-    "@std/fs": "jsr:@std/fs@^1.0.6",
-    "typescript": "npm:typescript@^5.7.2",
-    "zod": "npm:zod@^3.23.8",
+    "@std/fs": "jsr:@std/fs@^1.0.11",
+    "typescript": "npm:typescript@^5.7.3",
+    "zod": "npm:zod@^3.24.1",
     "jurassic/": "./jurassic/"
   },
   "exclude": ["_docs", "docs"]
