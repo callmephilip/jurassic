@@ -263,34 +263,65 @@ export const removeDuplicateImports = (sourceCode: string): string => {
     ts.ScriptTarget.Latest,
     true,
   );
-
-  // Track unique imports
-  const imports = new Map<string, Set<string>>();
+  const imports = new Map<
+    string,
+    {
+      specifiers: Set<string>;
+      defaultName?: string;
+      namespaceImport?: string;
+      typeOnlySpecifiers: Set<string>;
+      isBareImport?: boolean;
+    }
+  >();
   const importNodes: ts.ImportDeclaration[] = [];
 
-  // Visit nodes to collect imports
   function visit(node: ts.Node) {
     if (ts.isImportDeclaration(node)) {
       importNodes.push(node);
-
       const source = node.moduleSpecifier.getText().replace(/['"]/g, "");
+
       if (!imports.has(source)) {
-        imports.set(source, new Set());
+        imports.set(source, {
+          specifiers: new Set(),
+          typeOnlySpecifiers: new Set(),
+          isBareImport: !node.importClause,
+        });
+      }
+
+      // Handle bare imports
+      if (!node.importClause) {
+        imports.get(source)!.isBareImport = true;
+        return;
       }
 
       if (node.importClause) {
-        // Named imports
+        const isTypeOnly = node.importClause.isTypeOnly;
+
         if (
+          node.importClause.namedBindings &&
+          ts.isNamespaceImport(node.importClause.namedBindings)
+        ) {
+          imports.get(source)!.namespaceImport =
+            node.importClause.namedBindings.name.text;
+        } else if (
           node.importClause.namedBindings &&
           ts.isNamedImports(node.importClause.namedBindings)
         ) {
           node.importClause.namedBindings.elements.forEach((element) => {
-            imports.get(source)?.add(element.name.text);
+            if (isTypeOnly || element.isTypeOnly) {
+              imports.get(source)?.typeOnlySpecifiers.add(element.name.text);
+            } else {
+              imports.get(source)?.specifiers.add(element.name.text);
+            }
           });
         }
-        // Default import
         if (node.importClause.name) {
-          imports.get(source)?.add("default");
+          imports.get(source)!.defaultName = node.importClause.name.text;
+          if (isTypeOnly) {
+            imports.get(source)?.typeOnlySpecifiers.add("default");
+          } else {
+            imports.get(source)?.specifiers.add("default");
+          }
         }
       }
     }
@@ -299,29 +330,57 @@ export const removeDuplicateImports = (sourceCode: string): string => {
 
   visit(sourceFile);
 
-  // Generate new import statements
   const newImports: string[] = [];
-  for (const [source, specifiers] of imports) {
-    if (specifiers.size === 0) {
+  for (
+    const [
+      source,
+      {
+        specifiers,
+        typeOnlySpecifiers,
+        defaultName,
+        namespaceImport,
+        isBareImport,
+      },
+    ] of imports
+  ) {
+    // Handle bare imports first
+    if (isBareImport) {
       newImports.push(`import '${source}';`);
       continue;
     }
 
-    const hasDefault = specifiers.delete("default");
-    const namedImports = Array.from(specifiers).sort().join(", ");
+    // Handle type-only imports
+    if (typeOnlySpecifiers.size > 0) {
+      let importStr = "import type ";
+      const namedImports = Array.from(typeOnlySpecifiers).sort().join(", ");
+      importStr += `{ ${namedImports} }`;
+      importStr += ` from '${source}';`;
+      newImports.push(importStr);
+    }
 
-    let importStr = "import ";
-    if (hasDefault) {
-      importStr += `${source.split("/").pop()} `;
+    // Handle regular imports
+    if (specifiers.size > 0 || namespaceImport) {
+      let importStr = "import ";
+      if (namespaceImport) {
+        importStr += `* as ${namespaceImport}`;
+      } else {
+        const hasDefault = specifiers.delete("default");
+        const namedImports = Array.from(specifiers).sort().join(", ");
+
+        if (hasDefault && defaultName) {
+          importStr += `${defaultName} `;
+        }
+        if (namedImports) {
+          importStr += hasDefault
+            ? `, { ${namedImports} }`
+            : `{ ${namedImports} }`;
+        }
+      }
+      importStr += ` from '${source}';`;
+      newImports.push(importStr);
     }
-    if (namedImports) {
-      importStr += hasDefault ? `, { ${namedImports} }` : `{ ${namedImports} }`;
-    }
-    importStr += ` from '${source}';`;
-    newImports.push(importStr);
   }
 
-  // Replace old imports with new ones
   let result = sourceCode;
   const sortedNodes = importNodes.sort((a, b) => b.getStart() - a.getStart());
   for (const node of sortedNodes) {
@@ -352,16 +411,26 @@ Deno.test("findDenoTests", () => {
 Deno.test("removeDuplicateImports", () => {
   assertEquals(
     removeDuplicateImports(`
+import type { Config } from "jurassic/config.ts";        
+import * as ts from "typescript";        
 import { assertEquals } from "jsr:@std/assert";
+import path from "node:path";
+import "hello"
 
 Deno.test("t1", () => {});
 
 import { assertEquals } from "jsr:@std/assert";
+import path from "node:path";
 
 Deno.test("t2", () => {});
 `),
-    `import { assertEquals } from 'jsr:@std/assert';
+    `import type { Config } from 'jurassic/config.ts';
+import * as ts from 'typescript';
+import { assertEquals } from 'jsr:@std/assert';
+import path  from 'node:path';
+import 'hello';
 Deno.test("t1", () => {});
+
 
 
 

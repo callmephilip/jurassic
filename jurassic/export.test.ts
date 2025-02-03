@@ -19,10 +19,13 @@ const processNb = async (
   const exportCells = nb.cells.filter((cell) => cell.isExportable);
   const testCells = nb.cells.filter((cell) => cell.isTestCell);
   return [
-    exportCells.reduce(
-      // get rid of directives, we want code only
-      (acc, cell) => acc + cell.source.filter((s) => !isDirective(s)).join(""),
-      moduleHeader(moduleName),
+    removeDuplicateImports(
+      exportCells.reduce(
+        // get rid of directives, we want code only
+        (acc, cell) =>
+          acc + cell.source.filter((s) => !isDirective(s)).join(""),
+        moduleHeader(moduleName),
+      ),
     ),
     testCells.length !== 0
       ? removeDuplicateImports(
