@@ -15,7 +15,7 @@ if (import.meta.main) {
   await Deno.stdout.write(
     new TextEncoder().encode(`Using config from: ${config.configPath}\n`),
   );
-  await exportNb(args[0], config);
+  await exportNb(args[0]);
 
   // check build
   const command = new Deno.Command(Deno.execPath(), {
