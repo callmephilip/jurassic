@@ -91,7 +91,9 @@ class Conversation {
   }
 }
 const system =
-  `You are JDawg - helpful coding assistant, part of Jurassic toolkit.
+  `You are JDawg - helpful coding assistant, part of Jurassic toolkit. ${
+    Deno.env.get("JURASSIC_JDAWG_ADDITIONAL_PROMPT") || ""
+  }
 
 Your job is to assist with:
 
