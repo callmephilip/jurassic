@@ -50,11 +50,16 @@ export const exportNb = async (
     config.nbsPath,
   );
 
-  try {
-    await Deno.stat(config.outputPath);
-    await Deno.remove(config.outputPath, { recursive: true });
-  } catch {
-    // noop
+  // nuke the output directory ONLY if we are processing multiple files
+  // exportNb can be called inline at the bottom of the notebook to re-export on update
+  // we want to keep the rest of the codebase intact in this case
+  if (notebooksToProcess.length > 1) {
+    try {
+      await Deno.stat(config.outputPath);
+      await Deno.remove(config.outputPath, { recursive: true });
+    } catch {
+      // noop
+    }
   }
 
   // let's go through all notebooks and process them one by one

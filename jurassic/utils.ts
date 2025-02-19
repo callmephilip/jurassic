@@ -81,6 +81,8 @@ export const getNotebooksToProcess = (
         path.relative(nbsPath, path.join(fullPath, file.name)),
       );
     }
+  } else {
+    return [path.relative(nbsPath, fullPath)];
   }
 
   return notebooksToProcess;
