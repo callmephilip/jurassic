@@ -27,9 +27,28 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install jupyter notebook
+        run: |
+          pip install notebook
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install jupyter deno kernel
+        run: deno jupyter --unstable --install
+
+      - name: Run export
+        run: deno task build
       - uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_tools: "Bash(deno install), Bash(deno task *), NotebookEdit"
           # Optional: add custom trigger phrase (default: @claude)
           # trigger_phrase: "/claude"
           # Optional: add assignee trigger for issues
