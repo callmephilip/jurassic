@@ -29,5 +29,5 @@
     "zod": "npm:zod@^3.24.2",
     "jurassic/": "./jurassic/"
   },
-  "exclude": ["_docs", "docs"]
+  "exclude": ["_docs", "docs", "env"]
 }
