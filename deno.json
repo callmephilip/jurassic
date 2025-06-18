@@ -1,6 +1,6 @@
 {
   "name": "@jurassic/jurassic",
-  "version": "0.1.53",
+  "version": "0.1.54",
   "license": "MIT",
   "tasks": {
     "build": "deno run -A --reload jsr:@jurassic/jurassic/export . && deno task runnbs && deno check . && deno lint && deno fmt && deno task clean && deno test --allow-all --env-file",
@@ -22,11 +22,11 @@
   },
   "imports": {
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@^0.33.1",
-    "@std/async": "jsr:@std/async@^1.0.11",
-    "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
-    "@std/fs": "jsr:@std/fs@^1.0.14",
-    "typescript": "npm:typescript@^5.8.2",
-    "zod": "npm:zod@^3.24.2",
+    "@std/async": "jsr:@std/async@^1.0.13",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
+    "@std/fs": "jsr:@std/fs@^1.0.18",
+    "typescript": "npm:typescript@^5.8.3",
+    "zod": "npm:zod@^3.25.67",
     "jurassic/": "./jurassic/"
   },
   "exclude": ["_docs", "docs", "env"]
